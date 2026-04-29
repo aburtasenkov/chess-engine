@@ -1,6 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include "Constants.hpp"
+
 #include <stdint.h>
 
 namespace Engine {
@@ -32,14 +34,23 @@ namespace Engine {
    */
   class Board {
   public:
-    Board(void);
+    Board(void) = default;
     ~Board() = default;
 
-  private:
-    alignas(64) uint64_t pieces[2][7];
+    [[nodiscard]] uint64_t get_piece_bitboard(Color color, PieceType piece) const { return pieces[color][piece]; }
+    [[nodiscard]] uint64_t get_color_occupancy(Color color) const { return color_occupancy[color]; }
+    [[nodiscard]] uint64_t get_total_occupancy(void) const { return total_occupancy; }
 
-    uint64_t color_occupancy[2];
-    uint64_t total_occupancy;
+  private:
+    // alignas(64) ensures that the member starts on a new cache line boundary
+    // this prevents false sharing
+    alignas(64) uint64_t pieces[2][7] = {
+      {StartPos::WhitePawns, StartPos::WhiteKnights, StartPos::WhiteBishops, StartPos::WhiteRooks, StartPos::WhiteQueen, StartPos::WhiteKing, StartPos::WhiteAll},
+      {StartPos::BlackPawns, StartPos::BlackKnights, StartPos::BlackBishops, StartPos::BlackRooks, StartPos::BlackQueen, StartPos::BlackKing, StartPos::BlackAll}
+    };
+
+    uint64_t color_occupancy[2] = {{StartPos::WhiteAll}, {StartPos::BlackAll}};
+    uint64_t total_occupancy = color_occupancy[Color::WHITE] | color_occupancy[Color::BLACK];
   };
 
 }
