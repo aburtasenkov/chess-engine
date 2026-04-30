@@ -9,7 +9,7 @@ namespace Engine {
 
   /**
    * @enum PieceType
-   * @brief Helper enumerator used for lookup of the corresponding bitboards in \ref Board class.
+   * @brief Helper enumerator used for lookup of the corresponding bitboards in \ref Engine::Board class.
    */
   enum PieceType
     : uint8_t 
@@ -19,7 +19,7 @@ namespace Engine {
 
   /**
    * @enum Color
-   * @brief Helper enumerator used for lookup of the corresponding bitboards' color in \ref Board class.
+   * @brief Helper enumerator used for lookup of the corresponding bitboards' color in \ref Engine::Board class.
    */
   enum Color
     : uint8_t
