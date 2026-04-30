@@ -18,6 +18,6 @@ namespace Engine {
     static void generate_king_moves(const Board& board, const MoveList& moves);
   };
 
-}
+} // namespace Engine
 
 #endif
