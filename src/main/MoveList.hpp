@@ -20,7 +20,7 @@ namespace Engine {
 
     // capacity
     [[nodiscard]] size_t size(void) const noexcept { return sz; }
-    [[nodiscard]] bool empty() const noexcept { return sz; }
+    [[nodiscard]] bool empty() const noexcept { return sz == 0; }
 
     // modifiers
     inline void push_back(Move move);
