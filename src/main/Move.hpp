@@ -8,11 +8,15 @@ namespace Engine {
 
   /**
    * @enum MoveFlag
-   * @brief 4-bit identifiers for special move types.
-   * Bit 3: promotion bit
-   * Bit 2: capture bit
-   * Bit 1 and 0: special bits (for differentiating promotions, etc.)
-   * This avoids branch misprediction by allowing the developers to write branchless code.
+   * @brief 4-bit identifiers for special move types and metadata.
+   * 
+   * The flags are structured particulary to allow branchless logic and efficient move ordering:
+   * - Bit 3: promotion bit
+   * - Bit 2: capture bit
+   * - Bit 1 and 0: special differentiators (promotions, castling side, pawn push types, etc.)
+   * 
+   * Because the capture bit is weighted highly, integer-based sorting naturally prioritizes
+   * tactical moves during the search phase.
    */
   enum MoveFlag 
     : uint16_t 
@@ -37,11 +41,17 @@ namespace Engine {
 
   /**
    * @class Move
-   * @brief Class representing chess moves. 
-   * Bits 0-5: from square [values: 0-63]
-   * Bits 6-11: to square [values: 0-63]
-   * Bits 12-15: special \ref MoveFlag flags used for representing special info (captures, castling, promotions, etc.) [values: 0-15]
-   * Since the flag is in the mathematical "thousands" place, a CAPTURE will always result in a higher integer value than a QUIET move.
+   * @brief Represents a chess move packed into a single 16-bit integer.
+   * 
+   * To maximize efficiency and minimize memory usage, moves are stored in following format:
+   * | Bits  | Width | Description |
+   * | :---  | :---  | :---        |
+   * | 0-5   | 6     | To square (destination index 0-63) |
+   * | 5-11  | 6     | From square (destination index 0-63) |
+   * | 12-15 | 4     | Flags (\ref MoveFlag metadata) |
+   *
+   * @note By placing flags in the most significant bits, tactical moves represent higher integer values.
+   * Therefore, a capture will aways result in a higher integer value than a quiet move.
    */
   class Move {
   public:
@@ -51,13 +61,13 @@ namespace Engine {
 
     constexpr Move(uint16_t from, uint16_t to, MoveFlag flags) noexcept
       : data((static_cast<uint16_t>(flags) << 12) |
-            ((from & 0x3F) << 6) | 
-            (to & 0x3F)) {}
+            ((to & 0x3F) << 6) | 
+            (from & 0x3F)) {}
     
     // unpacking the represented data
     [[nodiscard]] constexpr uint16_t flag(void) const noexcept { return data >> 12; }
-    [[nodiscard]] constexpr uint16_t from(void) const noexcept { return (data >> 6) & 0x3F; }
-    [[nodiscard]] constexpr uint16_t to(void) const noexcept { return data & 0x3F; }
+    [[nodiscard]] constexpr uint16_t to(void) const noexcept { return (data >> 6) & 0x3F; }
+    [[nodiscard]] constexpr uint16_t from(void) const noexcept { return data & 0x3F; }
 
     [[nodiscard]] constexpr uint16_t get_raw(void) const noexcept { return data; }
     [[nodiscard]] constexpr bool is_null(void) const noexcept { return data == 0; }

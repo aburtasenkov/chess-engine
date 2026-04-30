@@ -5,6 +5,15 @@
 
 namespace Engine {
 
+  /**
+   * @namespace StartPos
+   * @brief Initial bitboard values for a standard game of chess.
+   * 
+   * Bitboards are mapped using the Little-Endian Rank-File mapping, where:
+   * - Bit 0 represents a1
+   * - Bit 7 represents a8
+   * - Bit 63 represents h8
+   */
   namespace StartPos {
     constexpr uint64_t WhitePawns   = 0x000000000000FF00ULL;
     constexpr uint64_t WhiteKnights = 0x0000000000000042ULL;

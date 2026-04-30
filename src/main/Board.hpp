@@ -9,7 +9,7 @@ namespace Engine {
 
   /**
    * @enum PieceType
-   * @brief Helper enumerator used for lookup of the corresponding bitboards in \ref Engine::Board class.
+   * @brief Enumerator for piece identification and internal \ref Engine::Board array indexing.
    */
   enum PieceType
     : uint8_t 
@@ -19,7 +19,10 @@ namespace Engine {
 
   /**
    * @enum Color
-   * @brief Helper enumerator used for lookup of the corresponding bitboards' color in \ref Engine::Board class.
+   * @brief Enumerator for side identification.
+   * 
+   * Used as the primary index for bitboard arrays to differentiate between
+   * white and black piece sets.
    */
   enum Color
     : uint8_t
@@ -29,8 +32,14 @@ namespace Engine {
 
   /**
    * @struct Board
-   * @brief Represents the physical chessboard using bitboards 
-   * for every single chess piece.
+   * @brief Representation of a physical chessboard state.
+   * 
+   * The Board class utilizes bitboards (64-bit integers) to represent piece positions.
+   * Each bit corresponds to a square on the chessboard, allowing for extremely fast
+   * move generation and position evaluation using bitwise operations.
+   * 
+   * @note This class is optimized for cache efficiency and memory alignment 
+   * to prevent false sharing in multithreaded environments.
    */
   class Board {
   public:
