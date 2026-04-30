@@ -72,6 +72,6 @@ namespace Engine {
     uint16_t data = 0x0;
   };
 
-}
+} // namespace Engine
 
 #endif
