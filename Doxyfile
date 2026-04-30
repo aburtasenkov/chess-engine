@@ -1,9 +1,9 @@
 # project related
 DOXYFILE_ENCODING  = UTF-8
-PROJECT_NAME        = "Chess Engine"
-PROJECT_NUMBER      = 0.0.1
-PROJECT_BRIEF       = "A high-performance bitboard chess engine in C++"
-OUTPUT_DIRECTORY    = build/docs
+PROJECT_NAME = "Chess Engine"
+PROJECT_NUMBER = 0.0.1
+PROJECT_BRIEF = "A high-performance bitboard chess engine in C++"
+OUTPUT_DIRECTORY = build/docs
 CREATE_SUBDIRS = YES
 ALLOW_UNICODE_NAMES = YES
 
@@ -27,7 +27,7 @@ WARN_NO_PARAMDOC = YES
 # input and parsing
 INPUT = src README.md
 INPUT_ENCODING = UTF-8
-RECURSIVE           = YES
+RECURSIVE = YES
 USE_MDFILE_AS_MAINPAGE = README.md
 EXCLUDE = src/test
 
