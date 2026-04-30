@@ -24,7 +24,7 @@ if (MSVC)
   target_compile_options(engine_lib PUBLIC /W4 /WX /O2 /Oi /Ot /GL)
   target_link_options(engine_lib INTERFACE /LTCG)
 else ()
-  target_compile_options(engine_lib PUBLIC -O3 -flto -march=native -Wall -Wextra -Werror)
+  target_compile_options(engine_lib PUBLIC -O3 -flto=auto -march=native -Wall -Wextra -Werror)
   target_link_options(engine_lib INTERFACE -flto)
 endif()
 
