@@ -39,4 +39,16 @@ if (GTEST_FOUND)
   target_compile_definitions(unit_tests PRIVATE UNIT_TESTS)
 endif()
 
+# documentation
+find_package(Doxygen)
+
+if (DOXYGEN_FOUND)
+  add_custom_target(docs
+    COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating API documentation..."
+    VERBATIM
+  )
+endif()
+
 install(TARGETS chess-engine DESTINATION bin)
