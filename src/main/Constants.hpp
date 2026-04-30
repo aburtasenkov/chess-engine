@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 namespace Engine {
+
   namespace StartPos {
     constexpr uint64_t WhitePawns   = 0x000000000000FF00ULL;
     constexpr uint64_t WhiteKnights = 0x0000000000000042ULL;
@@ -21,6 +22,7 @@ namespace Engine {
     constexpr uint64_t BlackKing    = 0x1000000000000000ULL;
     constexpr uint64_t BlackAll     = 0xFFFF000000000000ULL;
   }
-}
+
+} // namespace Engine
 
 #endif
