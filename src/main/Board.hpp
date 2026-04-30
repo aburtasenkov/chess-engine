@@ -53,6 +53,6 @@ namespace Engine {
     uint64_t total_occupancy = color_occupancy[Color::WHITE] | color_occupancy[Color::BLACK];
   };
 
-}
+} // namespace Engine
 
 #endif
