@@ -19,12 +19,12 @@ namespace Engine {
     /** @name Piece specific generation logic*/
     ///@{
 
-    static void generate_pawn_moves(const Board& board, const MoveList& moves);
-    static void generate_knight_moves(const Board& board, const MoveList& moves);
-    static void generate_bishop_moves(const Board& board, const MoveList& moves);
-    static void generate_rook_moves(const Board& board, const MoveList& moves);
-    static void generate_queen_moves(const Board& board, const MoveList& moves);
-    static void generate_king_moves(const Board& board, const MoveList& moves);
+    static void generate_pawn_moves(const Board& board, MoveList& moves);
+    static void generate_knight_moves(const Board& board, MoveList& moves);
+    static void generate_bishop_moves(const Board& board, MoveList& moves);
+    static void generate_rook_moves(const Board& board, MoveList& moves);
+    static void generate_queen_moves(const Board& board, MoveList& moves);
+    static void generate_king_moves(const Board& board, MoveList& moves);
     
     ///@}
   };
