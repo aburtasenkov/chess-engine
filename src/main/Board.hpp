@@ -76,7 +76,7 @@ namespace Engine {
 
     CastlingRights castling_rights = CastlingRights::ALL_CASTLING;
     Color side_to_move = Color::WHITE;
-    Square en_pessant = Square::SQ_NONE;  // allowed square to capture an en pessant move
+    Square en_passant = Square::SQ_NONE;  // allowed square to capture an en passant move
   };
 
 } // namespace Engine
