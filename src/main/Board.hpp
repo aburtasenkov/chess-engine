@@ -4,6 +4,7 @@
 #include "Constants.hpp"
 
 #include <stdint.h>
+#include <cassert>
 
 namespace Engine {
 
@@ -49,6 +50,15 @@ namespace Engine {
     [[nodiscard]] uint64_t get_piece_bitboard(Color color, PieceType piece) const { return pieces[color][piece]; }
     [[nodiscard]] uint64_t get_color_occupancy(Color color) const { return color_occupancy[color]; }
     [[nodiscard]] uint64_t get_total_occupancy(void) const { return color_occupancy[Color::BOTH]; }
+
+    void set_piece(uint8_t square, Color color, PieceType piece) {
+      assert(square < 64 && "square index is too high!");
+      uint64_t bit = 1ULL << square;
+
+      pieces[color][piece] |= bit;
+      color_occupancy[color] |= bit;
+      color_occupancy[Color::BOTH] |= bit;
+    }
 
   private:
     // alignas(64) ensures that the member starts on a new cache line boundary
