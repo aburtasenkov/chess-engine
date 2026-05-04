@@ -27,7 +27,7 @@ namespace Engine {
   enum Color
     : uint8_t
   {
-    WHITE = 0, BLACK
+    WHITE = 0, BLACK, BOTH
   };
 
   /**
@@ -48,7 +48,7 @@ namespace Engine {
 
     [[nodiscard]] uint64_t get_piece_bitboard(Color color, PieceType piece) const { return pieces[color][piece]; }
     [[nodiscard]] uint64_t get_color_occupancy(Color color) const { return color_occupancy[color]; }
-    [[nodiscard]] uint64_t get_total_occupancy(void) const { return total_occupancy; }
+    [[nodiscard]] uint64_t get_total_occupancy(void) const { return color_occupancy[Color::BOTH]; }
 
   private:
     // alignas(64) ensures that the member starts on a new cache line boundary
@@ -58,8 +58,11 @@ namespace Engine {
       {StartPos::BlackPawns, StartPos::BlackKnights, StartPos::BlackBishops, StartPos::BlackRooks, StartPos::BlackQueen, StartPos::BlackKing, StartPos::BlackAll}
     };
 
-    uint64_t color_occupancy[2] = {{StartPos::WhiteAll}, {StartPos::BlackAll}};
-    uint64_t total_occupancy = color_occupancy[Color::WHITE] | color_occupancy[Color::BLACK];
+    uint64_t color_occupancy[3] = {
+                                  {StartPos::WhiteAll}, 
+                                  {StartPos::BlackAll}, 
+                                  {StartPos::WhiteAll | StartPos::BlackAll}
+    };
   };
 
 } // namespace Engine
