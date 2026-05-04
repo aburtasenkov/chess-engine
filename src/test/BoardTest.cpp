@@ -9,8 +9,8 @@ namespace Engine {
     Board board;
 
     // helper to check if a specific square is set in a bitboard
-    bool is_bit_set(uint64_t bitboard, uint8_t square) {
-      return (bitboard >> square) & 1ULL;
+    bool is_bit_set(uint64_t bitboard, Square square) {
+      return (bitboard >> static_cast<uint8_t>(square)) & 1ULL;
     }
   };
 
@@ -54,45 +54,39 @@ namespace Engine {
   }
 
   TEST_F(BoardTest, SetSinglePiece) {
-    uint8_t e4 = 28;
-    board.set_piece(e4, Color::WHITE, PieceType::KNIGHT);
+    board.set_piece(SQ_E4, Color::WHITE, PieceType::KNIGHT);
 
-    EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::WHITE, PieceType::KNIGHT), e4));
-    EXPECT_TRUE(is_bit_set(board.get_color_occupancy(Color::WHITE), e4));
-    EXPECT_TRUE(is_bit_set(board.get_total_occupancy(), e4));
+    EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::WHITE, PieceType::KNIGHT), SQ_E4));
+    EXPECT_TRUE(is_bit_set(board.get_color_occupancy(Color::WHITE), SQ_E4));
+    EXPECT_TRUE(is_bit_set(board.get_total_occupancy(), SQ_E4));
   }
 
   TEST_F(BoardTest, SetMultiplePieces) {
-    uint8_t a2 = 8;
-    uint8_t b2 = 9;
-
-    board.set_piece(a2, Color::WHITE, PieceType::PAWN);
-    board.set_piece(b2, Color::WHITE, PieceType::PAWN);
+    board.set_piece(SQ_A2, Color::WHITE, PieceType::PAWN);
+    board.set_piece(SQ_B2, Color::WHITE, PieceType::PAWN);
 
     uint64_t pawns = board.get_piece_bitboard(Color::WHITE, PieceType::PAWN);
-    EXPECT_TRUE(is_bit_set(pawns, a2));
-    EXPECT_TRUE(is_bit_set(pawns, b2));
+    EXPECT_TRUE(is_bit_set(pawns, SQ_A2));
+    EXPECT_TRUE(is_bit_set(pawns, SQ_B2));
     
     // ensure no other bits were set
-    EXPECT_FALSE(is_bit_set(pawns, 0));
+    EXPECT_FALSE(is_bit_set(pawns, SQ_A1));
   }
 
   TEST_F(BoardTest, ColorIsolation) {
-    uint8_t d4 = 27;
-    
     // place a white queen and black queen on the same index
     // to ensure they dont leak into each others bitboards
-    board.set_piece(d4, Color::WHITE, PieceType::QUEEN);
+    board.set_piece(SQ_D4, Color::WHITE, PieceType::QUEEN);
     
-    EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::WHITE, PieceType::QUEEN), d4));
-    EXPECT_FALSE(is_bit_set(board.get_piece_bitboard(Color::BLACK, PieceType::QUEEN), d4));
+    EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::WHITE, PieceType::QUEEN), SQ_D4));
+    EXPECT_FALSE(is_bit_set(board.get_piece_bitboard(Color::BLACK, PieceType::QUEEN), SQ_D4));
   }
 
   TEST_F(BoardTest, BoundarySquares) {
-    board.set_piece(0, Color::WHITE, PieceType::ROOK);
-    board.set_piece(63, Color::BLACK, PieceType::ROOK);
+    board.set_piece(SQ_A1, Color::WHITE, PieceType::ROOK);
+    board.set_piece(SQ_H8, Color::BLACK, PieceType::ROOK);
 
-    EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::WHITE, PieceType::ROOK), 0));
-    EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::BLACK, PieceType::ROOK), 63));
+    EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::WHITE, PieceType::ROOK), SQ_A1));
+    EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::BLACK, PieceType::ROOK), SQ_H8));
   }
 }
