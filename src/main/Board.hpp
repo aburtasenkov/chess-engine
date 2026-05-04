@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <cassert>
+#include <cstring>
 
 namespace Engine {
 
@@ -60,6 +61,18 @@ namespace Engine {
     void set_castling_rights(CastlingRights rights) { castling_rights = rights; }
     void set_side_to_move(Color side) { side_to_move = side; }
     void set_en_passant_target(Square square) { en_passant_target = square; }
+    void clear(void) {
+      // clear all piece bitboards
+      std::memset(pieces, 0, sizeof(pieces));
+
+      // clear all color bitboards
+      std::memset(color_bitboard, 0, sizeof(color_bitboard));
+
+      // manual reset
+      castling_rights = CastlingRights::NO_CASTLING;
+      side_to_move = Color::WHITE;
+      en_passant_target = Square::SQ_NONE;
+    }
 
     void set_piece(uint8_t square, Color color, PieceType piece) {
       assert(square < 64 && "square index is too high!");
