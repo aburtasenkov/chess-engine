@@ -15,7 +15,7 @@ namespace Engine {
   };
 
   // starting bitboard must match the constants
-  TEST_F(BoardTest, StartingPositionCorrectness) {
+  TEST_F(BoardTest, InitialCorrectnesss) {
     EXPECT_EQ(board.get_piece_bitboard(WHITE, PAWN), StartPos::WhitePawns);
     EXPECT_EQ(board.get_piece_bitboard(WHITE, KNIGHT), StartPos::WhiteKnights);
     EXPECT_EQ(board.get_piece_bitboard(WHITE, BISHOP), StartPos::WhiteBishops);
@@ -31,21 +31,25 @@ namespace Engine {
     EXPECT_EQ(board.get_piece_bitboard(BLACK, QUEEN), StartPos::BlackQueen);
     EXPECT_EQ(board.get_piece_bitboard(BLACK, KING), StartPos::BlackKing);
     EXPECT_EQ(board.get_piece_bitboard(BLACK, ALL), StartPos::BlackAll);
+
+    EXPECT_EQ(board.get_side_to_move(), Color::WHITE);
+    EXPECT_EQ(board.get_castling_rights(), CastlingRights::ALL_CASTLING);
+    EXPECT_EQ(board.get_en_passant_target(), Square::SQ_NONE);
   }
 
   // ensure no pieces overlap on default construction
   TEST_F(BoardTest, NoColorOverlap) {
-    uint64_t white_occupancy = board.get_color_occupancy(WHITE);
-    uint64_t black_occupancy = board.get_color_occupancy(BLACK);
+    uint64_t white_bitboard = board.get_color_bitboard(WHITE);
+    uint64_t black_bitboard = board.get_color_bitboard(BLACK);
 
-    EXPECT_EQ(white_occupancy & black_occupancy, 0ULL) << "White and Black pieces are overlapping";
+    EXPECT_EQ(white_bitboard & black_bitboard, 0ULL) << "White and Black pieces are overlapping";
   }
 
-  // verify the total occupancy is the union of black and white pieces
+  // verify the total bitboard is the union of black and white pieces
   TEST_F(BoardTest, TotalOccupancyIntegrity) {
-    uint64_t total_occupancy = board.get_color_occupancy(WHITE) | board.get_color_occupancy(BLACK);
+    uint64_t total_bitboard = board.get_color_bitboard(WHITE) | board.get_color_bitboard(BLACK);
 
-    EXPECT_EQ(board.get_total_occupancy(), total_occupancy);
+    EXPECT_EQ(board.get_total_bitboard(), total_bitboard);
   }
 
   TEST_F(BoardTest, AllBitBoardCheck) {
@@ -57,8 +61,8 @@ namespace Engine {
     board.set_piece(SQ_E4, Color::WHITE, PieceType::KNIGHT);
 
     EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::WHITE, PieceType::KNIGHT), SQ_E4));
-    EXPECT_TRUE(is_bit_set(board.get_color_occupancy(Color::WHITE), SQ_E4));
-    EXPECT_TRUE(is_bit_set(board.get_total_occupancy(), SQ_E4));
+    EXPECT_TRUE(is_bit_set(board.get_color_bitboard(Color::WHITE), SQ_E4));
+    EXPECT_TRUE(is_bit_set(board.get_total_bitboard(), SQ_E4));
   }
 
   TEST_F(BoardTest, SetMultiplePieces) {
@@ -88,5 +92,29 @@ namespace Engine {
 
     EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::WHITE, PieceType::ROOK), SQ_A1));
     EXPECT_TRUE(is_bit_set(board.get_piece_bitboard(Color::BLACK, PieceType::ROOK), SQ_H8));
+  }
+
+  TEST_F(BoardTest, SetSideToMove) {
+    board.set_side_to_move(Color::BLACK);
+    EXPECT_EQ(board.get_side_to_move(), Color::BLACK);
+
+    board.set_side_to_move(Color::WHITE);
+    EXPECT_EQ(board.get_side_to_move(), Color::WHITE);
+  }
+
+  TEST_F(BoardTest, CastlingRightsLogic) {
+    board.set_castling_rights(static_cast<CastlingRights>(BLACK_OO | BLACK_OOO));
+    
+    EXPECT_FALSE(board.get_castling_rights() & WHITE_OO);
+    EXPECT_FALSE(board.get_castling_rights() & WHITE_OOO);
+    EXPECT_TRUE(board.get_castling_rights() & BLACK_OO);
+  }
+
+  TEST_F(BoardTest, EnPassantTarget) {
+    board.set_en_passant_target(Square::SQ_D3);
+    EXPECT_EQ(board.get_en_passant_target(), Square::SQ_D3);
+
+    board.set_en_passant_target(Square::SQ_NONE);
+    EXPECT_EQ(board.get_en_passant_target(), Square::SQ_NONE);
   }
 }
