@@ -47,17 +47,27 @@ namespace Engine {
     Board(void) = default;
     ~Board() = default;
 
+    // getters
     [[nodiscard]] uint64_t get_piece_bitboard(Color color, PieceType piece) const { return pieces[color][piece]; }
-    [[nodiscard]] uint64_t get_color_occupancy(Color color) const { return color_occupancy[color]; }
-    [[nodiscard]] uint64_t get_total_occupancy(void) const { return color_occupancy[Color::BOTH]; }
+    [[nodiscard]] uint64_t get_color_bitboard(Color color) const { return color_bitboard[color]; }
+    [[nodiscard]] uint64_t get_total_bitboard(void) const { return color_bitboard[Color::BOTH]; }
+
+    [[nodiscard]] CastlingRights get_castling_rights(void) const { return castling_rights; }
+    [[nodiscard]] Color get_side_to_move(void) const { return side_to_move; }
+    [[nodiscard]] Square get_en_passant_target(void) const { return en_passant_target; }
+
+    // setters
+    void set_castling_rights(CastlingRights rights) { castling_rights = rights; }
+    void set_side_to_move(Color side) { side_to_move = side; }
+    void set_en_passant_target(Square square) { en_passant_target = square; }
 
     void set_piece(uint8_t square, Color color, PieceType piece) {
       assert(square < 64 && "square index is too high!");
       uint64_t bit = 1ULL << square;
 
       pieces[color][piece] |= bit;
-      color_occupancy[color] |= bit;
-      color_occupancy[Color::BOTH] |= bit;
+      color_bitboard[color] |= bit;
+      color_bitboard[Color::BOTH] |= bit;
     }
 
   private:
@@ -68,7 +78,7 @@ namespace Engine {
       {StartPos::BlackPawns, StartPos::BlackKnights, StartPos::BlackBishops, StartPos::BlackRooks, StartPos::BlackQueen, StartPos::BlackKing, StartPos::BlackAll}
     };
 
-    uint64_t color_occupancy[3] = {
+    uint64_t color_bitboard[3] = {
                                   {StartPos::WhiteAll}, 
                                   {StartPos::BlackAll}, 
                                   {StartPos::WhiteAll | StartPos::BlackAll}
