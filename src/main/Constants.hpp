@@ -68,6 +68,23 @@ namespace Engine {
     constexpr uint64_t BlackAll     = BlackPawns | BlackKnights | BlackBishops | BlackRooks | BlackQueen | BlackKing;
   }
 
+  /**
+   * @enum CastlingRights
+   * @brief A 4-bit mask representing the castling availability for both players.
+   * 
+   * Castling rights are stored in a single byte where each bit corresponds to 
+   * a specific side's ability to castle. When a King or Rook moves, or a Rook 
+   * is captured, the corresponding bit is cleared using a bitwise AND.
+   */
+  enum CastlingRights : uint8_t {
+    NO_CASTLING   = 0b0000,
+    WHITE_OO      = 0b0001,
+    WHITE_OOO     = 0b0010,
+    BLACK_OO      = 0b0100,
+    BLACK_OOO     = 0b1000,
+    ALL_CASTLING  = WHITE_OO | WHITE_OOO | BLACK_OO | BLACK_OOO
+  };
+
 } // namespace Engine
 
 #endif
