@@ -16,7 +16,7 @@ namespace Engine {
   enum PieceType
     : uint8_t 
   {
-    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL, NONE
+    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL
   };
 
   /**
@@ -29,7 +29,7 @@ namespace Engine {
   enum Color
     : uint8_t
   {
-    WHITE = 0, BLACK, BOTH, NONE
+    WHITE = 0, BLACK, BOTH
   };
 
   /**
@@ -71,7 +71,7 @@ namespace Engine {
 
       // manual reset
       castling_rights = CastlingRights::NO_CASTLING;
-      side_to_move = Color::NONE;
+      side_to_move = Color::WHITE;
       en_passant_target = Square::SQ_NONE;
     }
 

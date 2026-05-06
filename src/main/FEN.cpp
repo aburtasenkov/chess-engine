@@ -86,16 +86,12 @@ namespace Engine::IO {
   bool Fen::parse_side_to_move(Board& board, std::string_view seg) {
     if (seg.length() != 1) return false;
 
-    Color side_to_move = Color::NONE;
     char c = seg[0];
     switch (c) {
-      case 'w': side_to_move = Color::WHITE; break;
-      case 'b': side_to_move = Color::BLACK; break;
+      case 'w': board.set_side_to_move(Color::WHITE); return true;
+      case 'b': board.set_side_to_move(Color::BLACK); return true;
       default: return false;
     }
-
-    board.set_side_to_move(side_to_move);
-    return true;
   }
 
   bool Fen::parse_castling_ability(Board& board, std::string_view seg) {
