@@ -90,7 +90,9 @@ namespace Engine::IO {
       length++;
     }
 
-    if (side_to_move != Color::NONE) board.set_side_to_move(side_to_move);
+    if (side_to_move == Color::NONE) return false; // parsing failed
+
+    board.set_side_to_move(side_to_move);
     return true;
   }
 
