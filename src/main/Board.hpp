@@ -71,7 +71,7 @@ namespace Engine {
 
       // manual reset
       castling_rights = CastlingRights::NO_CASTLING;
-      side_to_move = Color::WHITE;
+      side_to_move = Color::NONE;
       en_passant_target = Square::SQ_NONE;
     }
 
