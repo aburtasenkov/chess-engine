@@ -99,9 +99,9 @@ namespace Engine::IO {
   }
 
   bool Fen::parse_castling_ability(Board& board, std::string_view seg) {
-    uint8_t length = 0;
-
     CastlingRights castling_rights = CastlingRights::NO_CASTLING;
+    
+    uint8_t length = 0;
     for (char c : seg) {
       if (length == 0 && c == '-') break;  // castling rights remain none
 
@@ -117,6 +117,7 @@ namespace Engine::IO {
       }
 
       castling_rights = static_cast<CastlingRights>(static_cast<uint8_t>(castling_rights) | current);
+      length++;
     }
 
     board.set_castling_rights(castling_rights);
