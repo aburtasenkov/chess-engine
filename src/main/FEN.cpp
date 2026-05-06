@@ -6,6 +6,7 @@ namespace Engine::IO {
 
   bool Fen::load(Board& board, std::string_view fen) {
     auto segments = split(fen, ' ');
+    if (segments.size() < 4) return false;
 
     board.clear();
 
@@ -56,20 +57,20 @@ namespace Engine::IO {
         file += (c - '0');  // skip empty squares
       } else {
 
-        // boundary check
-        if (file > 7 || rank < 0) return false;
+        // boundary check: since rank is unsigned, it will wrap to 255
+        if (file > 7 || rank > 7) return false;
 
         Color color = isupper(c) ? Color::WHITE : Color::BLACK;
         char lower_c = tolower(c);
         
-        PieceType type = PieceType::NONE;
+        PieceType type;
         switch (lower_c) {
-          case 'p': type = PieceType::PAWN; break;
+          case 'p': type = PieceType::PAWN;   break;
           case 'n': type = PieceType::KNIGHT; break;
           case 'b': type = PieceType::BISHOP; break;
-          case 'r': type = PieceType::ROOK; break;
-          case 'q': type = PieceType::QUEEN; break;
-          case 'k': type = PieceType::KING; break;
+          case 'r': type = PieceType::ROOK;   break;
+          case 'q': type = PieceType::QUEEN;  break;
+          case 'k': type = PieceType::KING;   break;
           default: return false;
         }
 
@@ -110,10 +111,13 @@ namespace Engine::IO {
       if (length >= 4) return false;
 
       CastlingRights current = CastlingRights::NO_CASTLING;
-      if (c == 'K') current = CastlingRights::WHITE_OO;
-      else if (c == 'k') current = CastlingRights::BLACK_OO;
-      else if (c == 'Q') current = CastlingRights::WHITE_OOO;
-      else if (c == 'q') current = CastlingRights::BLACK_OOO;
+      switch (c) {
+        case 'K': current = CastlingRights::WHITE_OO;  break;
+        case 'k': current = CastlingRights::BLACK_OO;  break;
+        case 'Q': current = CastlingRights::WHITE_OOO; break;
+        case 'q': current = CastlingRights::BLACK_OOO; break;
+        default: return false;
+      }
 
       castling_rights = static_cast<CastlingRights>(static_cast<uint8_t>(castling_rights) | current);
     }
