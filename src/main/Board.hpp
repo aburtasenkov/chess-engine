@@ -56,11 +56,15 @@ namespace Engine {
     [[nodiscard]] CastlingRights get_castling_rights(void) const { return castling_rights; }
     [[nodiscard]] Color get_side_to_move(void) const { return side_to_move; }
     [[nodiscard]] Square get_en_passant_target(void) const { return en_passant_target; }
+    [[nodiscard]] uint16_t get_halfmove_clock(void) const { return halfmove_clock; }
+    [[nodiscard]] uint16_t get_fullmove_counter(void) const { return fullmove_counter; }
 
     // setters
     void set_castling_rights(CastlingRights rights) { castling_rights = rights; }
     void set_side_to_move(Color side) { side_to_move = side; }
     void set_en_passant_target(Square square) { en_passant_target = square; }
+    void set_halfmove_clock(uint16_t clock) { halfmove_clock = clock; }
+    void set_fullmove_counter(uint16_t counter) { fullmove_counter = counter; }
 
     void clear(void) {
       // clear all piece bitboards
@@ -101,6 +105,8 @@ namespace Engine {
     CastlingRights castling_rights = CastlingRights::ALL_CASTLING;
     Color side_to_move = Color::WHITE;
     Square en_passant_target = Square::SQ_NONE;  // allowed square to capture an en passant move
+    uint16_t halfmove_clock = 0;
+    uint16_t fullmove_counter = 1;
   };
 
 } // namespace Engine
