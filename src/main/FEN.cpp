@@ -53,10 +53,16 @@ namespace Engine::IO {
 
     for (char c : seg) {
       if (c == '/') { // rank separator
+        // each rank must have 8 squares accounted for
+        if (file != 8) return false;
+
         rank--;
         file = 0;
       } else if (isdigit(c)) {
         file += (c - '0');  // skip empty squares
+
+        // check if digit pushed past the board
+        if (file > 8) return false;
       } else {
 
         // boundary check: since rank is unsigned, it will wrap to 255
@@ -80,7 +86,7 @@ namespace Engine::IO {
         file++;
       }
     }
-    return true;
+    return (rank == 0) && (file == 8);
   }
 
   bool Fen::parse_side_to_move(Board& board, std::string_view seg) {
