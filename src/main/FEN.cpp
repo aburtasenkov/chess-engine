@@ -82,21 +82,16 @@ namespace Engine::IO {
   }
 
   bool Fen::parse_side_to_move(Board& board, std::string_view seg) {
+    if (seg.length() != 1) return false;
+
     Color side_to_move = Color::NONE;
-
-    uint8_t length = 0;
-    for (char c : seg) {
-      if (length >= 1) return false; // FEN syntax check
-
-      char lower_c = tolower(c);
-      if (lower_c == 'w') side_to_move = Color::WHITE;
-      else if (lower_c == 'b') side_to_move = Color::BLACK;
-
-      length++;
+    char c = seg[0];
+    switch (c) {
+      case 'w': side_to_move = Color::WHITE; break;
+      case 'b': side_to_move = Color::BLACK; break;
+      default: return false;
     }
-
-    if (side_to_move == Color::NONE) return false; // parsing failed
-
+    
     board.set_side_to_move(side_to_move);
     return true;
   }
