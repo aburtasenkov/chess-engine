@@ -81,7 +81,7 @@ namespace Engine::IO {
 
     uint8_t length = 0;
     for (char c : seg) {
-      if (length > 1) return false; // FEN syntax check
+      if (length >= 1) return false; // FEN syntax check
 
       char lower_c = tolower(c);
       if (lower_c == 'w') side_to_move = Color::WHITE;
