@@ -141,6 +141,7 @@ namespace Engine::IO {
 
     if (ec != std::errc()) return false;
 
+    (void)board;
     // TODO: set halfmove clock
     return true;
   }
@@ -151,6 +152,7 @@ namespace Engine::IO {
 
     if (ec != std::errc()) return false;
 
+    (void)board;
     // TODO: set fullmove clock
     return true;  }
 
