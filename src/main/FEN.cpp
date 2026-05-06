@@ -97,7 +97,26 @@ namespace Engine::IO {
   }
 
   bool Fen::parse_castling_ability(Board& board, std::string_view seg) {
-    (void)board; (void)seg; return false;
+    uint8_t length = 0;
+
+    CastlingRights castling_rights = CastlingRights::NO_CASTLING;
+    for (char c : seg) {
+      if (length == 0 && c == '-') break;  // castling rights remain none
+
+      if (length >= 4) return false;
+
+      CastlingRights current = CastlingRights::NO_CASTLING;
+      if (c == 'K') current = CastlingRights::WHITE_OO;
+      else if (c == 'k') current = CastlingRights::BLACK_OO;
+      else if (c == 'Q') current = CastlingRights::WHITE_OOO;
+      else if (c == 'q') current = CastlingRights::BLACK_OOO;
+
+      castling_rights = static_cast<CastlingRights>(static_cast<uint8_t>(castling_rights) | current);
+    }
+
+    board.set_castling_rights(castling_rights);
+
+    return true;
   }
 
   bool Fen::parse_en_passant_target(Board& board, std::string_view seg) {
