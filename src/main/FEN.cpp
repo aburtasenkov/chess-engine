@@ -132,7 +132,7 @@ namespace Engine::IO {
     uint8_t file = seg[0] - 'a';
     uint8_t rank = seg[1] - '1';
 
-    if (file > 7 || rank != 3 || rank != 6) return false;
+    if (file > 7 || (rank != 2 && rank != 5)) return false;
 
     board.set_en_passant_target(static_cast<Square>(rank * 8 + file));
     return true;
