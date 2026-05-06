@@ -16,7 +16,7 @@ namespace Engine {
   enum PieceType
     : uint8_t 
   {
-    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL
+    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL, NONE
   };
 
   /**
@@ -29,7 +29,7 @@ namespace Engine {
   enum Color
     : uint8_t
   {
-    WHITE = 0, BLACK, BOTH
+    WHITE = 0, BLACK, BOTH, NONE
   };
 
   /**
@@ -61,7 +61,7 @@ namespace Engine {
     void set_castling_rights(CastlingRights rights) { castling_rights = rights; }
     void set_side_to_move(Color side) { side_to_move = side; }
     void set_en_passant_target(Square square) { en_passant_target = square; }
-    
+
     void clear(void) {
       // clear all piece bitboards
       std::memset(pieces, 0, sizeof(pieces));
