@@ -97,4 +97,4 @@ namespace Engine {
     EXPECT_EQ(moves[3].flag(), MoveFlag::QUIET);
   }
   
-}
+} // namespace Engine

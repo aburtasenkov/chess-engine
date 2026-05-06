@@ -68,4 +68,5 @@ namespace Engine {
     EXPECT_EQ(constList[0].flag(), MoveFlag::CAPTURE);
     EXPECT_EQ(constList.begin()->from(), 10);
   }
-}
+
+} // namespace Engine

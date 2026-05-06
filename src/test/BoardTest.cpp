@@ -117,4 +117,5 @@ namespace Engine {
     board.set_en_passant_target(Square::SQ_NONE);
     EXPECT_EQ(board.get_en_passant_target(), Square::SQ_NONE);
   }
-}
+
+} // namespace Engine
