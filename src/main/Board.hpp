@@ -16,7 +16,7 @@ namespace Engine {
   enum PieceType
     : uint8_t 
   {
-    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL
+    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL, NONE
   };
 
   /**
@@ -29,7 +29,7 @@ namespace Engine {
   enum Color
     : uint8_t
   {
-    WHITE = 0, BLACK, BOTH
+    WHITE = 0, BLACK, BOTH, NONE
   };
 
   /**
