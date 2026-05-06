@@ -140,11 +140,21 @@ namespace Engine::IO {
 
   bool Fen::parse_halfmove_clock(Board& board, std::string_view seg) {
     uint16_t value = 0;
-    auto [ptr, ec] = std::from_chars()
+    auto [ptr, ec] = std::from_chars(seg.data(), seg.data() + seg.size(), value);
+
+    if (ec != std::errc()) return false;
+
+    // TODO: set halfmove clock
+    return true;
   }
 
   bool Fen::parse_fullmove_counter(Board& board, std::string_view seg) {
-    (void)board; (void)seg; return false;
-  }
+    uint16_t value = 0;
+    auto [ptr, ec] = std::from_chars(seg.data(), seg.data() + seg.size(), value);
+
+    if (ec != std::errc()) return false;
+
+    // TODO: set fullmove clock
+    return true;  }
 
 }
