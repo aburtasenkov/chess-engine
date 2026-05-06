@@ -49,7 +49,7 @@ namespace Engine::IO {
     uint8_t file = 0; // start at file A
 
     for (char c : seg) {
-      if (c == '/') {
+      if (c == '/') { // rank separator
         rank--;
         file = 0;
       } else if (isdigit(c)) {
@@ -57,7 +57,7 @@ namespace Engine::IO {
       } else {
         Color color = isupper(c) ? Color::WHITE : Color::BLACK;
         char lower_c = tolower(c);
-        PieceType type;
+        PieceType type = PieceType::NONE;
 
         if      (lower_c == 'p') type = PieceType::PAWN;
         else if (lower_c == 'n') type = PieceType::KNIGHT;
@@ -66,7 +66,10 @@ namespace Engine::IO {
         else if (lower_c == 'q') type = PieceType::QUEEN;
         else if (lower_c == 'k') type = PieceType::KING;
 
-        board.set_piece(8 * rank + file, color, type);
+        if (type != PieceType::NONE) {
+          board.set_piece(8 * rank + file, color, type);
+        }
+
         file++;
       }
     }
@@ -74,7 +77,21 @@ namespace Engine::IO {
   }
 
   bool Fen::parse_side_to_move(Board& board, std::string_view seg) {
-    (void)board; (void)seg; return false;
+    Color side_to_move = Color::NONE;
+
+    uint8_t length = 0;
+    for (char c : seg) {
+      if (length > 1) return false; // FEN syntax check
+
+      char lower_c = tolower(c);
+      if (lower_c == 'w') side_to_move = Color::WHITE;
+      else if (lower_c == 'b') side_to_move = Color::BLACK;
+
+      length++;
+    }
+
+    if (side_to_move != Color::NONE) board.set_side_to_move(side_to_move);
+    return true;
   }
 
   bool Fen::parse_castling_ability(Board& board, std::string_view seg) {
