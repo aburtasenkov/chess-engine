@@ -2,6 +2,8 @@
 
 #include "Board.hpp"
 
+#include <charconv>
+
 namespace Engine::IO {
 
   bool Fen::load(Board& board, std::string_view fen) {
@@ -91,7 +93,7 @@ namespace Engine::IO {
       case 'b': side_to_move = Color::BLACK; break;
       default: return false;
     }
-    
+
     board.set_side_to_move(side_to_move);
     return true;
   }
@@ -123,11 +125,22 @@ namespace Engine::IO {
   }
 
   bool Fen::parse_en_passant_target(Board& board, std::string_view seg) {
-    (void)board; (void)seg; return false;
+    if (seg == "-") return true; // en passant target is already set to none, since board is cleared
+
+    if (seg.length() != 2) return false;
+
+    uint8_t file = seg[0] - 'a';
+    uint8_t rank = seg[1] - '1';
+
+    if (file > 7 || rank != 3 || rank != 6) return false;
+
+    board.set_en_passant_target(static_cast<Square>(rank * 8 + file));
+    return true;
   }
 
   bool Fen::parse_halfmove_clock(Board& board, std::string_view seg) {
-    (void)board; (void)seg; return false;
+    uint16_t value = 0;
+    auto [ptr, ec] = std::from_chars()
   }
 
   bool Fen::parse_fullmove_counter(Board& board, std::string_view seg) {
