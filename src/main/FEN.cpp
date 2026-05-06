@@ -55,21 +55,25 @@ namespace Engine::IO {
       } else if (isdigit(c)) {
         file += (c - '0');  // skip empty squares
       } else {
+
+        // boundary check
+        if (file > 7 || rank < 0) return false;
+
         Color color = isupper(c) ? Color::WHITE : Color::BLACK;
         char lower_c = tolower(c);
+        
         PieceType type = PieceType::NONE;
-
-        if      (lower_c == 'p') type = PieceType::PAWN;
-        else if (lower_c == 'n') type = PieceType::KNIGHT;
-        else if (lower_c == 'b') type = PieceType::BISHOP; 
-        else if (lower_c == 'r') type = PieceType::ROOK;
-        else if (lower_c == 'q') type = PieceType::QUEEN;
-        else if (lower_c == 'k') type = PieceType::KING;
-
-        if (type != PieceType::NONE) {
-          board.set_piece(8 * rank + file, color, type);
+        switch (lower_c) {
+          case 'p': type = PieceType::PAWN; break;
+          case 'n': type = PieceType::KNIGHT; break;
+          case 'b': type = PieceType::BISHOP; break;
+          case 'r': type = PieceType::ROOK; break;
+          case 'q': type = PieceType::QUEEN; break;
+          case 'k': type = PieceType::KING; break;
+          default: return false;
         }
 
+        board.set_piece(8 * rank + file, color, type);
         file++;
       }
     }
