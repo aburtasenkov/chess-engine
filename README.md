@@ -32,6 +32,6 @@ The code is documented using Doxygen. To generate the HTML docs run:
 make docs
 ```
 ## About the Author
-I am self-taught low-level systems enthusiast who has been programming intensively since end of 2024. This project was started at the beginning of my second semester as a computer science major.
+I am self-taught low-level systems enthusiast who has been programming intensively since the end of 2024. This project was started at the beginning of my second semester as a computer science major.
 
 Thank you for taking the time to read through my project!
