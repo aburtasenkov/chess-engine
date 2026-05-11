@@ -24,6 +24,8 @@ namespace Engine {
     using iterator = Move*;
     using const_iterator = const Move*;
 
+    MoveList(void) = default;
+
     // iterators
     [[nodiscard]] iterator begin(void)  noexcept { return moves; };
     [[nodiscard]] iterator end(void)  noexcept { return moves + sz; }
