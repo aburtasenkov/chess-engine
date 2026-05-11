@@ -17,6 +17,8 @@ namespace Engine {
    * 
    * @note The capacity is capped at 256. While the maximum number of legal moves in 
    * a reachable chess position is 218, a power of 2 is used for alignment and safety.
+   * Since /ref Move class has no default initalizer, instantiating this class will
+   * perform in constant speed because the moves array will contain garbage values.
    * @see https://lichess.org/@/Tobs40/blog/why-a-reachable-position-can-have-at-most-218-playable-moves/a5xdxeqs
    */
   class MoveList {

@@ -57,7 +57,6 @@ namespace Engine {
   public:
     // default constructor for an empty or invalid moves
     Move() noexcept = default;
-    
 
     constexpr Move(uint16_t from, uint16_t to, MoveFlag flags) noexcept
       : data((static_cast<uint16_t>(flags) << 12) |
@@ -79,7 +78,7 @@ namespace Engine {
     [[nodiscard]] auto operator<=>(const Move& other) const noexcept { return data <=> other.data; }
 
   private:
-    uint16_t data = 0x0;
+    uint16_t data;
   };
 
 } // namespace Engine
