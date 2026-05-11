@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "Board.hpp"
 #include "FEN.hpp"
+#include "Board.hpp"
 
 namespace Engine {
 
