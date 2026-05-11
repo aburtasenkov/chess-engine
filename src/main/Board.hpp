@@ -10,29 +10,6 @@
 namespace Engine {
 
   /**
-   * @enum PieceType
-   * @brief Enumerator for piece identification and internal \ref Engine::Board array indexing.
-   */
-  enum PieceType
-    : uint8_t 
-  {
-    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL
-  };
-
-  /**
-   * @enum Color
-   * @brief Enumerator for side identification.
-   * 
-   * Used as the primary index for bitboard arrays to differentiate between
-   * white and black piece sets.
-   */
-  enum Color
-    : uint8_t
-  {
-    WHITE = 0, BLACK, BOTH
-  };
-
-  /**
    * @struct Board
    * @brief Representation of a physical chessboard state.
    * 

@@ -1,43 +1,12 @@
 #ifndef MOVE_H
 #define MOVE_H
 
+#include "Constants.hpp"
+
 #include <cstdint>
 #include <compare>
 
 namespace Engine {
-
-  /**
-   * @enum MoveFlag
-   * @brief 4-bit identifiers for special move types and metadata.
-   * 
-   * The flags are structured particulary to allow branchless logic and efficient move ordering:
-   * - Bit 3: promotion bit
-   * - Bit 2: capture bit
-   * - Bit 1 and 0: special differentiators (promotions, castling side, pawn push types, etc.)
-   * 
-   * Because the capture bit is weighted highly, integer-based sorting naturally prioritizes
-   * tactical moves during the search phase.
-   */
-  enum MoveFlag 
-    : uint16_t 
-  {
-    QUIET = 0,
-    DOUBLE_PAWN_PUSH = 1,
-    KING_CASTLE = 2,
-    QUEEN_CASTLE = 3,
-    CAPTURE = 4,
-    EN_PASSANT = 5,
-    // promotions (skips capture bit)
-    P_KNIGHT = 8,
-    P_BISHOP = 9,
-    P_ROOK = 10,
-    P_QUEEN = 11,
-    // promotions + captures
-    PC_KNIGHT = 12,
-    PC_BISHOP = 13,
-    PC_ROOK = 14,
-    PC_QUEEN = 15
-  };
 
   /**
    * @class Move

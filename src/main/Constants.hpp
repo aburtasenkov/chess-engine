@@ -85,6 +85,62 @@ namespace Engine {
     ALL_CASTLING  = WHITE_OO | WHITE_OOO | BLACK_OO | BLACK_OOO
   };
 
+  /**
+   * @enum MoveFlag
+   * @brief 4-bit identifiers for special move types and metadata.
+   * 
+   * The flags are structured particulary to allow branchless logic and efficient move ordering:
+   * - Bit 3: promotion bit
+   * - Bit 2: capture bit
+   * - Bit 1 and 0: special differentiators (promotions, castling side, pawn push types, etc.)
+   * 
+   * Because the capture bit is weighted highly, integer-based sorting naturally prioritizes
+   * tactical moves during the search phase.
+   */
+  enum MoveFlag 
+    : uint16_t 
+  {
+    QUIET = 0,
+    DOUBLE_PAWN_PUSH = 1,
+    KING_CASTLE = 2,
+    QUEEN_CASTLE = 3,
+    CAPTURE = 4,
+    EN_PASSANT = 5,
+    // promotions (skips capture bit)
+    P_KNIGHT = 8,
+    P_BISHOP = 9,
+    P_ROOK = 10,
+    P_QUEEN = 11,
+    // promotions + captures
+    PC_KNIGHT = 12,
+    PC_BISHOP = 13,
+    PC_ROOK = 14,
+    PC_QUEEN = 15
+  };
+
+  /**
+   * @enum PieceType
+   * @brief Enumerator for piece identification and internal \ref Engine::Board array indexing.
+   */
+  enum PieceType
+    : uint8_t 
+  {
+    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL
+  };
+
+  /**
+   * @enum Color
+   * @brief Enumerator for side identification.
+   * 
+   * Used as the primary index for bitboard arrays to differentiate between
+   * white and black piece sets.
+   */
+  enum Color
+    : uint8_t
+  {
+    WHITE = 0, BLACK, BOTH
+  };
+
 } // namespace Engine
 
 #endif
