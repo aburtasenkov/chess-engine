@@ -30,6 +30,9 @@ namespace Engine {
     [[nodiscard]] uint64_t get_color_bitboard(Color color) const { return color_bitboard[color]; }
     [[nodiscard]] uint64_t get_total_bitboard(void) const { return color_bitboard[Color::BOTH]; }
 
+    [[nodiscard]] uint64_t get_empty_squares(void) const { return ~color_bitboard[Color::BOTH]; }
+    [[nodiscard]] uint64_t get_enemy_pieces(void) const { return color_bitboard[side_to_move == Color::WHITE ? Color::BLACK : Color::WHITE]; }
+
     [[nodiscard]] CastlingRights get_castling_rights(void) const { return castling_rights; }
     [[nodiscard]] Color get_side_to_move(void) const { return side_to_move; }
     [[nodiscard]] Square get_en_passant_target(void) const { return en_passant_target; }
