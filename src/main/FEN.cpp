@@ -7,48 +7,48 @@
 
 namespace Engine::IO {
 
-  bool Fen::import(Board& board, std::string_view fen) {
+  bool Fen::load(Board& board, std::string_view fen) {
     auto segments = split(fen, ' ');
     if (segments.size() < 4) return false;
 
     board.clear();
 
-    if (!parse_pieces(board, segments[0]))            return false;
-    if (!parse_side_to_move(board, segments[1]))      return false;
-    if (!parse_castling_ability(board, segments[2]))  return false;
-    if (!parse_en_passant_target(board, segments[3])) return false;
+    if (!load_pieces(board, segments[0]))            return false;
+    if (!load_side_to_move(board, segments[1]))      return false;
+    if (!load_castling_ability(board, segments[2]))  return false;
+    if (!load_en_passant_target(board, segments[3])) return false;
 
     // optional fields in some FEN syntaxes
-    if (segments.size() > 4) parse_halfmove_clock(board, segments[4]);
-    if (segments.size() > 5) parse_fullmove_counter(board, segments[5]);
+    if (segments.size() > 4) load_halfmove_clock(board, segments[4]);
+    if (segments.size() > 5) load_fullmove_counter(board, segments[5]);
 
     return true;
   }
 
-  std::string Fen::export(const Board& board) {
+  std::string Fen::save(const Board& board) {
     std::stringstream fen;
 
-    export_piece_placement(fen, board);
+    save_piece_placement(fen, board);
 
     fen << ' ';
-    export_active_color(fen, board);
+    save_active_color(fen, board);
 
     fen << ' ';
-    export_castling_ability(fen, board);
+    save_castling_ability(fen, board);
 
     fen << ' ';
-    export_en_passant_target(fen, board);
+    save_en_passant_target(fen, board);
 
     fen << ' ';
-    export_halfmove_clock(fen, board);
+    save_halfmove_clock(fen, board);
 
     fen << ' ';
-    export_fullmove_counter(fen, board);
+    save_fullmove_counter(fen, board);
 
     return fen.str();
   }
 
-  void Fen::export_piece_placement(std::stringstream& fen, const Board& board) {
+  void Fen::save_piece_placement(std::stringstream& fen, const Board& board) {
     // maps colors and piece types from enumerator
     const static char piece_chars[2][6] = {
       {'P', 'N', 'B', 'R', 'Q', 'K'}, // white pieces
@@ -105,12 +105,12 @@ namespace Engine::IO {
     return;
   }
 
-  void Fen::export_active_color(std::stringstream& fen, const Board& board) {
+  void Fen::save_active_color(std::stringstream& fen, const Board& board) {
     fen << (board.get_side_to_move() == Color::WHITE ? 'w' : 'b');
     return;
   }
 
-  void Fen::export_castling_ability(std::stringstream& fen, const Board& board) {
+  void Fen::save_castling_ability(std::stringstream& fen, const Board& board) {
     std::string fen_castling = "";
     uint8_t castling_rights = static_cast<uint8_t>(board.get_castling_rights());
 
@@ -128,7 +128,7 @@ namespace Engine::IO {
     return;
   }
 
-  void Fen::export_en_passant_target(std::stringstream& fen, const Board& board) {
+  void Fen::save_en_passant_target(std::stringstream& fen, const Board& board) {
     Square en_passant = board.get_en_passant_target();
     if (en_passant == Square::SQ_NONE) {
       fen << '-';
@@ -142,12 +142,12 @@ namespace Engine::IO {
     return;
   }
 
-  void Fen::export_halfmove_clock(std::stringstream& fen, const Board& board) {
+  void Fen::save_halfmove_clock(std::stringstream& fen, const Board& board) {
     fen << board.get_halfmove_clock();
     return;
   }
 
-  void Fen::export_fullmove_counter(std::stringstream& fen, const Board& board) {
+  void Fen::save_fullmove_counter(std::stringstream& fen, const Board& board) {
     fen << board.get_fullmove_counter();
     return;
   }
@@ -169,7 +169,7 @@ namespace Engine::IO {
     return tokens;
   }
 
-  bool Fen::parse_pieces(Board& board, std::string_view seg) {
+  bool Fen::load_pieces(Board& board, std::string_view seg) {
     uint8_t rank = 7; // start at rank 8
     uint8_t file = 0; // start at file A
 
@@ -211,7 +211,7 @@ namespace Engine::IO {
     return (rank == 0) && (file == 8);
   }
 
-  bool Fen::parse_side_to_move(Board& board, std::string_view seg) {
+  bool Fen::load_side_to_move(Board& board, std::string_view seg) {
     if (seg.length() != 1) return false;
 
     char c = seg[0];
@@ -222,7 +222,7 @@ namespace Engine::IO {
     }
   }
 
-  bool Fen::parse_castling_ability(Board& board, std::string_view seg) {
+  bool Fen::load_castling_ability(Board& board, std::string_view seg) {
     CastlingRights castling_rights = CastlingRights::NO_CASTLING;
     
     uint8_t length = 0;
@@ -249,7 +249,7 @@ namespace Engine::IO {
     return true;
   }
 
-  bool Fen::parse_en_passant_target(Board& board, std::string_view seg) {
+  bool Fen::load_en_passant_target(Board& board, std::string_view seg) {
     if (seg == "-") return true; // en passant target is already set to none, since board is cleared
 
     if (seg.length() != 2) return false;
@@ -263,7 +263,7 @@ namespace Engine::IO {
     return true;
   }
 
-  bool Fen::parse_halfmove_clock(Board& board, std::string_view seg) {
+  bool Fen::load_halfmove_clock(Board& board, std::string_view seg) {
     uint16_t value = 0;
     auto [ptr, ec] = std::from_chars(seg.data(), seg.data() + seg.size(), value);
 
@@ -273,7 +273,7 @@ namespace Engine::IO {
     return true;
   }
 
-  bool Fen::parse_fullmove_counter(Board& board, std::string_view seg) {
+  bool Fen::load_fullmove_counter(Board& board, std::string_view seg) {
     uint16_t value = 0;
     auto [ptr, ec] = std::from_chars(seg.data(), seg.data() + seg.size(), value);
 
