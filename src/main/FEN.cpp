@@ -7,7 +7,7 @@
 
 namespace Engine::IO {
 
-  bool Fen::load(Board& board, std::string_view fen) {
+  bool Fen::import(Board& board, std::string_view fen) {
     auto segments = split(fen, ' ');
     if (segments.size() < 4) return false;
 

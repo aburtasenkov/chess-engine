@@ -19,7 +19,7 @@ namespace Engine {
        * @param fen The FEN string to parse.
        * @return true if parsing was successful.
        */
-      static bool load(Board& board, std::string_view fen);
+      static bool import(Board& board, std::string_view fen);
   
       /** 
        * @brief Converts the current board state into a FEN string.

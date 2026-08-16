@@ -21,7 +21,7 @@ namespace Engine {
 
   TEST_F(FenTest, ParseStandardStart) {
     std::string_view fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    ASSERT_TRUE(IO::Fen::load(board, fen));
+    ASSERT_TRUE(IO::Fen::import(board, fen));
 
     EXPECT_EQ(board.get_side_to_move(), Color::WHITE);
     EXPECT_EQ(board.get_castling_rights(), CastlingRights::ALL_CASTLING);
@@ -36,7 +36,7 @@ namespace Engine {
   TEST_F(FenTest, ParseSicilianDefense) {
     // 1. e4 c5 2. Nf3
     std::string_view fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2";
-    ASSERT_TRUE(IO::Fen::load(board, fen));
+    ASSERT_TRUE(IO::Fen::import(board, fen));
 
     EXPECT_EQ(board.get_side_to_move(), Color::BLACK);
     
@@ -50,42 +50,42 @@ namespace Engine {
 
   TEST_F(FenTest, EnPassantValidation) {
     // validate white en passant target (Rank 3)
-    EXPECT_TRUE(IO::Fen::load(board, "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"));
+    EXPECT_TRUE(IO::Fen::import(board, "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"));
     EXPECT_EQ(board.get_en_passant_target(), Square::SQ_E3);
 
     // validate black en passant target (Rank 6)
-    EXPECT_TRUE(IO::Fen::load(board, "rnbqkbnr/pppp1ppp/8/4p3/8/8/PPPPPPPP/RNBQKBNR w KQkq e6 0 1"));
+    EXPECT_TRUE(IO::Fen::import(board, "rnbqkbnr/pppp1ppp/8/4p3/8/8/PPPPPPPP/RNBQKBNR w KQkq e6 0 1"));
     EXPECT_EQ(board.get_en_passant_target(), Square::SQ_E6);
 
     // invalid en passant target (Rank 4 - not possible in chess)
-    EXPECT_FALSE(IO::Fen::load(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e4 0 1"));
+    EXPECT_FALSE(IO::Fen::import(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e4 0 1"));
   }
 
   TEST_F(FenTest, PartialCastlingRights) {
     // only white O-O and Black O-O-O
-    EXPECT_TRUE(IO::Fen::load(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kq - 0 1"));
+    EXPECT_TRUE(IO::Fen::import(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kq - 0 1"));
     EXPECT_EQ(board.get_castling_rights(), (CastlingRights::WHITE_OO | CastlingRights::BLACK_OOO));
 
     // no castling
-    EXPECT_TRUE(IO::Fen::load(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1"));
+    EXPECT_TRUE(IO::Fen::import(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1"));
     EXPECT_EQ(board.get_castling_rights(), CastlingRights::NO_CASTLING);
   }
 
   TEST_F(FenTest, MalformedInputHandling) {
     // too few segments
-    EXPECT_FALSE(IO::Fen::load(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w"));
+    EXPECT_FALSE(IO::Fen::import(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w"));
 
     // invalid characters
-    EXPECT_FALSE(IO::Fen::load(board, "rnbqkbnr/ppXppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
+    EXPECT_FALSE(IO::Fen::import(board, "rnbqkbnr/ppXppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
 
     // invalid side to move
-    EXPECT_FALSE(IO::Fen::load(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR x KQkq - 0 1"));
+    EXPECT_FALSE(IO::Fen::import(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR x KQkq - 0 1"));
 
     // too many files
-    EXPECT_FALSE(IO::Fen::load(board, "rnbqkbnr/pppppppp/9/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
+    EXPECT_FALSE(IO::Fen::import(board, "rnbqkbnr/pppppppp/9/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
     
     // invalid castling char
-    EXPECT_FALSE(IO::Fen::load(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w K!kq - 0 1"));
+    EXPECT_FALSE(IO::Fen::import(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w K!kq - 0 1"));
   }
 
   /*
@@ -94,7 +94,7 @@ namespace Engine {
 
   TEST_F(FenTest, ExportStandardStart) {
     std::string expected_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    ASSERT_TRUE(IO::Fen::load(board, expected_fen));
+    ASSERT_TRUE(IO::Fen::import(board, expected_fen));
     EXPECT_EQ(IO::Fen::export_fen(board), expected_fen);
   }
 
@@ -122,7 +122,7 @@ namespace Engine {
     };
 
     for (const auto& fen : tricky_fens) {
-      ASSERT_TRUE(IO::Fen::load(board, fen));
+      ASSERT_TRUE(IO::Fen::import(board, fen));
       EXPECT_EQ(IO::Fen::export_fen(board), fen);
     }
   }
