@@ -36,12 +36,12 @@ namespace Engine {
       /** @name Segment specific parsing logic*/
       ///@{
 
-      static bool parse_pieces(Board& board, std::string_view seg);
-      static bool parse_side_to_move(Board& board, std::string_view seg);
-      static bool parse_castling_ability(Board& board, std::string_view seg);
-      static bool parse_en_passant_target(Board& board, std::string_view seg);
-      static bool parse_halfmove_clock(Board& board, std::string_view seg);
-      static bool parse_fullmove_counter(Board& board, std::string_view seg);
+      inline static bool parse_pieces(Board& board, std::string_view seg);
+      inline static bool parse_side_to_move(Board& board, std::string_view seg);
+      inline static bool parse_castling_ability(Board& board, std::string_view seg);
+      inline static bool parse_en_passant_target(Board& board, std::string_view seg);
+      inline static bool parse_halfmove_clock(Board& board, std::string_view seg);
+      inline static bool parse_fullmove_counter(Board& board, std::string_view seg);
 
       ///@}
 
