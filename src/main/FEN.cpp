@@ -3,6 +3,7 @@
 #include "Board.hpp"
 
 #include <charconv>
+#include <sstream>
 
 namespace Engine::IO {
 
@@ -25,9 +26,130 @@ namespace Engine::IO {
   }
 
   std::string Fen::export_fen(const Board& board) {
-    (void)board;
-    // TODO
-    return "";
+    std::stringstream fen;
+
+    export_piece_placement(fen, board);
+
+    fen << ' ';
+    export_active_color(fen, board);
+
+    fen << ' ';
+    export_castling_ability(fen, board);
+
+    fen << ' ';
+    export_en_passant_target(fen, board);
+
+    fen << ' ';
+    export_halfmove_clock(fen, board);
+
+    fen << ' ';
+    export_fullmove_counter(fen, board);
+
+    return fen.str();
+  }
+
+  void Fen::export_piece_placement(std::stringstream& fen, const Board& board) {
+    // maps colors and piece types from enumerator
+    const static char piece_chars[2][6] = {
+      {'P', 'N', 'B', 'R', 'Q', 'K'}, // white pieces
+      {'p', 'n', 'b', 'r', 'q', 'k'}  // black pieces
+    };
+
+    for (int8_t rank = 7; rank >= 0; --rank) {
+      uint8_t empty_count = 0;
+
+      for (int8_t file = 0; file <= 7; ++file) {
+        uint8_t sq = rank * 8 + file;
+        uint64_t bit = 1ULL << sq;
+        
+        char piece_char = '\0'; // initialized to placeholder value
+
+        for (uint8_t color = static_cast<uint8_t>(Color::WHITE); 
+              color <= static_cast<uint8_t>(Color::BLACK); 
+              ++color) 
+        {
+          for (uint8_t piece_type = static_cast<uint8_t>(PieceType::PAWN);
+                piece_type <= static_cast<uint8_t>(PieceType::KING); 
+                ++piece_type) 
+          {
+            if (board.get_piece_bitboard(static_cast<Color>(color), static_cast<PieceType>(piece_type)) & bit) {
+              piece_char = piece_chars[color][piece_type];
+              break;
+            }
+          }
+
+          if (piece_char != '\0') {
+            break;
+          }
+        }
+
+        if (piece_char == '\0') {
+          empty_count++;
+        } else {
+          if (empty_count > 0) {
+            fen << static_cast<int>(empty_count); // cast to int to avoid interpretation as char
+            empty_count = 0;
+          }
+          fen << piece_char;
+        }
+      }
+
+      if (empty_count > 0) {
+        fen << static_cast<int>(empty_count); // same as above
+      }
+
+      if (rank > 0) {
+        fen << '/';
+      }
+    }
+    return;
+  }
+
+  void Fen::export_active_color(std::stringstream& fen, const Board& board) {
+    fen << (board.get_side_to_move() == Color::WHITE ? 'w' : 'b');
+    return;
+  }
+
+  void Fen::export_castling_ability(std::stringstream& fen, const Board& board) {
+    std::string fen_castling = "";
+    uint8_t castling_rights = static_cast<uint8_t>(board.get_castling_rights());
+
+    if (castling_rights == CastlingRights::NO_CASTLING) {
+      fen_castling = '-';
+    } else {
+      if (castling_rights & CastlingRights::WHITE_OO) fen_castling += 'K';
+      if (castling_rights & CastlingRights::WHITE_OOO) fen_castling += 'Q';
+      if (castling_rights & CastlingRights::BLACK_OO) fen_castling += 'k';
+      if (castling_rights & CastlingRights::BLACK_OOO) fen_castling += 'q';
+    }
+
+    fen << fen_castling;
+
+    return;
+  }
+
+  void Fen::export_en_passant_target(std::stringstream& fen, const Board& board) {
+    Square en_passant = board.get_en_passant_target();
+    if (en_passant == Square::SQ_NONE) {
+      fen << '-';
+    } else {
+      uint8_t square = static_cast<uint8_t>(en_passant);
+      char file = 'a' + (square % 8);
+      char rank = '1' + (square / 8);
+      fen << file << rank;
+    }
+
+    return;
+  }
+
+  void Fen::export_halfmove_clock(std::stringstream& fen, const Board& board) {
+    fen << board.get_halfmove_clock();
+    return;
+  }
+
+  void Fen::export_fullmove_counter(std::stringstream& fen, const Board& board) {
+    fen << board.get_fullmove_counter();
+    return;
   }
 
   std::vector<std::string_view> Fen::split(std::string_view str, char delimiter) {

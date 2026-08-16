@@ -15,6 +15,10 @@ namespace Engine {
     }
   };
 
+  /*
+  IMPORTING TESTS
+  */
+
   TEST_F(FenTest, ParseStandardStart) {
     std::string_view fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     ASSERT_TRUE(IO::Fen::load(board, fen));
@@ -82,6 +86,45 @@ namespace Engine {
     
     // invalid castling char
     EXPECT_FALSE(IO::Fen::load(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w K!kq - 0 1"));
+  }
+
+  /*
+  EXPORTING TESTS
+  */
+
+  TEST_F(FenTest, ExportStandardStart) {
+    std::string expected_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    ASSERT_TRUE(IO::Fen::load(board, expected_fen));
+    EXPECT_EQ(IO::Fen::export_fen(board), expected_fen);
+  }
+
+  TEST_F(FenTest, ExportEmptyBoard) {
+    board.clear(); 
+    // ensure counters are in standard base state, incase someone wrecks board.clear up (me)
+    board.set_halfmove_clock(0);
+    board.set_fullmove_counter(1);
+
+    std::string expected_fen = "8/8/8/8/8/8/8/8 w - - 0 1";
+    EXPECT_EQ(IO::Fen::export_fen(board), expected_fen);
+  }
+
+  TEST_F(FenTest, ExportRoundTripTrickyPositions) {
+    // collection of interesting positions
+    std::vector<std::string> tricky_fens = {
+      // Kiwipete
+      "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+      
+      // many empty squares, no castling
+      "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+      
+      // tests black to move, en passant and partial castling
+      "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R b KQ e3 1 8"
+    };
+
+    for (const auto& fen : tricky_fens) {
+      ASSERT_TRUE(IO::Fen::load(board, fen));
+      EXPECT_EQ(IO::Fen::export_fen(board), fen);
+    }
   }
 
 } // namespace Engine

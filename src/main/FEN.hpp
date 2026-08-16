@@ -44,6 +44,18 @@ namespace Engine {
       static bool parse_fullmove_counter(Board& board, std::string_view seg);
 
       ///@}
+
+      /** @name Segment specific exporting logic */
+      ///@{
+
+      inline static void export_piece_placement(std::stringstream& fen, const Board& board);
+      inline static void export_active_color(std::stringstream& fen, const Board& board);
+      inline static void export_castling_ability(std::stringstream& fen, const Board& board);
+      inline static void export_en_passant_target(std::stringstream& fen, const Board& board);
+      inline static void export_halfmove_clock(std::stringstream& fen, const Board& board);
+      inline static void export_fullmove_counter(std::stringstream& fen, const Board& board);
+      
+      ///@}
     };
   
   } // namespace IO
