@@ -25,7 +25,7 @@ namespace Engine::IO {
     return true;
   }
 
-  std::string Fen::export_fen(const Board& board) {
+  std::string Fen::export(const Board& board) {
     std::stringstream fen;
 
     export_piece_placement(fen, board);

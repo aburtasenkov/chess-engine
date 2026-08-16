@@ -24,7 +24,7 @@ namespace Engine {
       /** 
        * @brief Converts the current board state into a FEN string.
       */
-      static std::string export_fen(const Board& board);
+      static std::string export(const Board& board);
 
     private:
       /**

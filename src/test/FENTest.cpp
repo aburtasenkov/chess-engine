@@ -95,7 +95,7 @@ namespace Engine {
   TEST_F(FenTest, ExportStandardStart) {
     std::string expected_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     ASSERT_TRUE(IO::Fen::import(board, expected_fen));
-    EXPECT_EQ(IO::Fen::export_fen(board), expected_fen);
+    EXPECT_EQ(IO::Fen::export(board), expected_fen);
   }
 
   TEST_F(FenTest, ExportEmptyBoard) {
@@ -105,7 +105,7 @@ namespace Engine {
     board.set_fullmove_counter(1);
 
     std::string expected_fen = "8/8/8/8/8/8/8/8 w - - 0 1";
-    EXPECT_EQ(IO::Fen::export_fen(board), expected_fen);
+    EXPECT_EQ(IO::Fen::export(board), expected_fen);
   }
 
   TEST_F(FenTest, ExportRoundTripTrickyPositions) {
@@ -123,7 +123,7 @@ namespace Engine {
 
     for (const auto& fen : tricky_fens) {
       ASSERT_TRUE(IO::Fen::import(board, fen));
-      EXPECT_EQ(IO::Fen::export_fen(board), fen);
+      EXPECT_EQ(IO::Fen::export(board), fen);
     }
   }
 
