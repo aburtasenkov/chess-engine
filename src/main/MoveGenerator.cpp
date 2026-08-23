@@ -10,10 +10,12 @@ namespace Engine {
   static constexpr uint64_t FILE_H = 0x8080808080808080ULL;
 
   // constant for calculating pawn promotions
-  static constexpr uint64_t RANK_8 = 0xFF00000000000000ULL;
+  static constexpr uint64_t RANK_1 = 0x00000000000000FFULL; // black promotion rank
+  static constexpr uint64_t RANK_8 = 0xFF00000000000000ULL; // white promotion rank
 
   // constant for calculating pawn double pushes
-  static constexpr uint64_t RANK_3 = 0x0000000000FF0000ULL;
+  static constexpr uint64_t RANK_3 = 0x0000000000FF0000ULL; // white double push rank
+  static constexpr uint64_t RANK_6 = 0x0000FF0000000000ULL; // black double push rank
 
   // return index of the least significant bit that is "1" 
   static inline uint16_t lsb(uint64_t bitboard) {
