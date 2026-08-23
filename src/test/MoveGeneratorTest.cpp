@@ -135,4 +135,34 @@ namespace Engine {
     EXPECT_EQ(moves.size(), 0);
   }
 
+  TEST_F(MoveGeneratorTest, BlackPawnPushes) {
+    IO::Fen::load(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
+    auto moves = MoveGenerator::generate_legal_moves(board);
+    
+    // single and double pushes
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E7, Square::SQ_E6));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E7, Square::SQ_E5));
+  }
+
+  TEST_F(MoveGeneratorTest, BlackEnPassantCapture) {
+    // white just played e2 to e4, black has a pawn on d4
+    IO::Fen::load(board, "rnbqkbnr/ppp1pppp/8/8/3pP3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
+    auto moves = MoveGenerator::generate_legal_moves(board);
+
+    // black pawn on d4 to en passant on e3
+    EXPECT_TRUE(move_exists(moves, Square::SQ_D4, Square::SQ_E3)); 
+  }
+
+  TEST_F(MoveGeneratorTest, BlackPawnPromotion) {
+    // black pawn on a2 promotion on a1
+    IO::Fen::load(board, "K1k5/8/8/8/8/8/p7/8 b - - 0 1");
+    auto moves = MoveGenerator::generate_legal_moves(board);
+
+    unsigned int promotions = 0;
+    for (const auto& move : moves) {
+      if (move.to() == Square::SQ_A1) promotions++;
+    }
+    EXPECT_EQ(promotions, 4); 
+  }
+
 } // namespace Engine
