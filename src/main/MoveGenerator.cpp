@@ -188,8 +188,27 @@ namespace Engine {
   }
 
   void MoveGenerator::pseudo_legal_knight_moves(const Board& board, MoveList& moves) {
-    (void)board;
-    (void)moves;
+    Color side_to_move = board.get_side_to_move();
+    uint64_t knights = board.get_piece_bitboard(side_to_move, PieceType::KNIGHT);
+
+    uint64_t friendly_pieces = board.get_color_bitboard(side_to_move);
+    uint64_t hostile_pieces = board.get_enemy_pieces();
+
+    while (knights) {
+      uint16_t from = pop_lsb(knights);
+
+      uint64_t attacks = KNIGHT_ATTACK_TBL[from] & ~friendly_pieces;
+
+      while (attacks) {
+        uint16_t to = pop_lsb(attacks);
+
+        if ((1ULL << to) & hostile_pieces) {
+          moves.push_back(Move(from, to, CAPTURE));
+        } else {
+          moves.push_back(Move(from, to, QUIET));
+        }
+      }
+    }
   }
 
   void MoveGenerator::pseudo_legal_bishop_moves(const Board& board, MoveList& moves) {

@@ -166,4 +166,82 @@ namespace Engine {
     EXPECT_EQ(promotions, 4); 
   }
 
+  TEST_F(MoveGeneratorTest, KnightCenterMobility) {
+    // white knight on e4
+    IO::Fen::load(board, "k7/8/8/8/4N3/8/8/K7 w - - 0 1");
+    auto moves = generator.pseudo_legal_moves(board);
+
+    // should have 8 valid moves
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D6));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F6));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_C5));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_G5));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_C3));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_G3));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D2));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F2));
+
+    size_t knight_move_count = 0;
+    for (const auto& move : moves) {
+      if (move.from() == Square::SQ_E4) knight_move_count++;
+    }
+    EXPECT_EQ(knight_move_count, 8);
+  }
+
+  TEST_F(MoveGeneratorTest, KnightCornerAndEdgeWrapAround) {
+    // white Knight on a1
+    IO::Fen::load(board, "k7/8/8/8/8/8/8/N3K3 w - - 0 1");
+    auto moves = generator.pseudo_legal_moves(board);
+
+    // only 2 valid moves from a1
+    EXPECT_TRUE(move_exists(moves, Square::SQ_A1, Square::SQ_B3));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_A1, Square::SQ_C2));
+
+    // no wrap around moves to H-file or G-file occurred?
+    EXPECT_FALSE(move_exists(moves, Square::SQ_A1, Square::SQ_H2));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_A1, Square::SQ_G2));
+
+    size_t knight_move_count = 0;
+    for (const auto& move : moves) {
+      if (move.from() == Square::SQ_A1) knight_move_count++;
+    }
+    EXPECT_EQ(knight_move_count, 2);
+  }
+
+  TEST_F(MoveGeneratorTest, KnightCapturesAndFriendlyBlockade) {
+    // white knight on e4
+    // friendly pawns blocking c3, g3, d2, f2
+    // hostile pawns on d6, f6 (captures)
+    // empty squares on c5, g5
+    IO::Fen::load(board, "k7/8/3p1p2/8/4N3/2P3P1/3P1P2/K7 w - - 0 1");
+    auto moves = generator.pseudo_legal_moves(board);
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D6));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F6));
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_C5));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_G5));
+
+    // blocked by friendly pieces (should NOT exist)
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_C3));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_G3));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_D2));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_F2));
+  }
+
+  TEST_F(MoveGeneratorTest, BlackKnightMoves) {
+    // black turn, black Knight on d5
+    IO::Fen::load(board, "k7/8/8/3n4/8/8/8/K7 b - - 0 1");
+    auto moves = generator.pseudo_legal_moves(board);
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_D5, Square::SQ_C7));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_D5, Square::SQ_E7));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_D5, Square::SQ_B6));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_D5, Square::SQ_F6));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_D5, Square::SQ_B4));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_D5, Square::SQ_F4));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_D5, Square::SQ_C3));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_D5, Square::SQ_E3));
+  }
+
 } // namespace Engine
