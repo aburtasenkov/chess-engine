@@ -178,10 +178,10 @@ namespace Engine {
       attacks |= (bitboard << 6) & ~Grid::FILE_GH;
 
       // shifts moving down the bitboard
-      attacks |= (bitboard << 17) & ~Grid::FILE_H;
-      attacks |= (bitboard << 15) & ~Grid::FILE_A;
-      attacks |= (bitboard << 10) & ~Grid::FILE_GH;
-      attacks |= (bitboard << 6) & ~Grid::FILE_AB;
+      attacks |= (bitboard >> 17) & ~Grid::FILE_H;
+      attacks |= (bitboard >> 15) & ~Grid::FILE_A;
+      attacks |= (bitboard >> 10) & ~Grid::FILE_GH;
+      attacks |= (bitboard >> 6) & ~Grid::FILE_AB;
 
       KNIGHT_ATTACK_TBL[square] = attacks;
     }
