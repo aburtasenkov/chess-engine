@@ -141,6 +141,26 @@ namespace Engine {
     WHITE = 0, BLACK, BOTH
   };
 
+  namespace Grid {
+    // constants for calculating pawn captures
+    static constexpr uint64_t FILE_A = 0x0101010101010101ULL;
+    static constexpr uint64_t FILE_H = 0x8080808080808080ULL;
+
+    // constants for knights wrap around prevention
+    static constexpr uint64_t FILE_B  = 0x0202020202020202ULL;
+    static constexpr uint64_t FILE_G  = 0x4040404040404040ULL;
+    static constexpr uint64_t FILE_AB = FILE_A | FILE_B;
+    static constexpr uint64_t FILE_GH = FILE_G | FILE_H;
+
+    // constant for calculating pawn promotions
+    static constexpr uint64_t RANK_1 = 0x00000000000000FFULL; // black promotion rank
+    static constexpr uint64_t RANK_8 = 0xFF00000000000000ULL; // white promotion rank
+
+    // constant for calculating pawn double pushes
+    static constexpr uint64_t RANK_3 = 0x0000000000FF0000ULL; // white double push rank
+    static constexpr uint64_t RANK_6 = 0x0000FF0000000000ULL; // black double push rank
+  }
+
 } // namespace Engine
 
 #endif

@@ -2,26 +2,9 @@
 
 #include "Board.hpp"
 #include "MoveList.hpp"
+#include "Constants.hpp"
 
 namespace Engine {
-
-  // constants for calculating pawn captures
-  static constexpr uint64_t FILE_A = 0x0101010101010101ULL;
-  static constexpr uint64_t FILE_H = 0x8080808080808080ULL;
-
-  // constants for knights wrap around prevention
-  static constexpr uint64_t FILE_B  = 0x0202020202020202ULL;
-  static constexpr uint64_t FILE_G  = 0x4040404040404040ULL;
-  static constexpr uint64_t FILE_AB = FILE_A | FILE_B;
-  static constexpr uint64_t FILE_GH = FILE_G | FILE_H;
-
-  // constant for calculating pawn promotions
-  static constexpr uint64_t RANK_1 = 0x00000000000000FFULL; // black promotion rank
-  static constexpr uint64_t RANK_8 = 0xFF00000000000000ULL; // white promotion rank
-
-  // constant for calculating pawn double pushes
-  static constexpr uint64_t RANK_3 = 0x0000000000FF0000ULL; // white double push rank
-  static constexpr uint64_t RANK_6 = 0x0000FF0000000000ULL; // black double push rank
 
   // return index of the least significant bit that is "1" 
   static inline uint16_t lsb(uint64_t bitboard) {
@@ -64,8 +47,8 @@ namespace Engine {
     if (side_to_move == Color::WHITE) {
       // single push
       uint64_t single_push = (pawns << 8) & empty;
-      uint64_t promo_push = single_push & RANK_8;
-      uint64_t quiet_push = single_push & ~RANK_8;
+      uint64_t promo_push = single_push & Grid::RANK_8;
+      uint64_t quiet_push = single_push & ~Grid::RANK_8;
 
       while (quiet_push) {
         uint16_t to = pop_lsb(quiet_push);
@@ -82,15 +65,15 @@ namespace Engine {
 
       // double pushes
       // only from rank 2 (when single push is on rank 3) and intermediate square is empty
-      uint64_t double_push = ((single_push & RANK_3) << 8) & empty;
+      uint64_t double_push = ((single_push & Grid::RANK_3) << 8) & empty;
       while (double_push) {
         uint16_t to = pop_lsb(double_push);
         moves.push_back(Move(to - 16, to, DOUBLE_PAWN_PUSH));
       }
 
       // captures
-      uint64_t capture_left = ((pawns & ~FILE_A) << 7) & enemy;
-      uint64_t capture_right = ((pawns & ~FILE_H) << 9) & enemy;
+      uint64_t capture_left = ((pawns & ~Grid::FILE_A) << 7) & enemy;
+      uint64_t capture_right = ((pawns & ~Grid::FILE_H) << 9) & enemy;
 
       auto serialize_captures = [&](uint64_t cap_mask, int16_t offset) {
         while (cap_mask) {
@@ -111,8 +94,8 @@ namespace Engine {
       // en passant
       if (ep_square != Square::SQ_NONE) {
         uint64_t ep_bit = 1ULL << static_cast<uint16_t>(ep_square); // convert square to bitboard representation
-        uint64_t ep_left = (pawns & ~FILE_A) << 7 & ep_bit;
-        uint64_t ep_right = (pawns & ~FILE_H) << 9 & ep_bit;
+        uint64_t ep_left = (pawns & ~Grid::FILE_A) << 7 & ep_bit;
+        uint64_t ep_right = (pawns & ~Grid::FILE_H) << 9 & ep_bit;
         if (ep_left) {
           moves.push_back(Move(lsb(ep_left) - 7, static_cast<uint16_t>(ep_square), EN_PASSANT));
         }
@@ -124,8 +107,8 @@ namespace Engine {
     } else {  // black turn
       // single push
       uint64_t single_push = (pawns >> 8) & empty;
-      uint64_t promo_push = single_push & RANK_1;
-      uint64_t quiet_push = single_push & ~RANK_1;
+      uint64_t promo_push = single_push & Grid::RANK_1;
+      uint64_t quiet_push = single_push & ~Grid::RANK_1;
 
       while (quiet_push) {
         uint16_t to = pop_lsb(quiet_push);
@@ -142,15 +125,15 @@ namespace Engine {
 
       // double pushes
       // only from rank 7 (when single push is on rank 6) and intermediate square is empty
-      uint64_t double_push = ((single_push & RANK_6) >> 8) & empty;
+      uint64_t double_push = ((single_push & Grid::RANK_6) >> 8) & empty;
       while (double_push) {
         uint16_t to = pop_lsb(double_push);
         moves.push_back(Move(to + 16, to, DOUBLE_PAWN_PUSH));
       }
 
       // captures
-      uint64_t capture_left = ((pawns & ~FILE_A) >> 9) & enemy;
-      uint64_t capture_right = ((pawns & ~FILE_H) >> 7) & enemy;
+      uint64_t capture_left = ((pawns & ~Grid::FILE_A) >> 9) & enemy;
+      uint64_t capture_right = ((pawns & ~Grid::FILE_H) >> 7) & enemy;
 
       auto serialize_captures = [&](uint64_t cap_mask, int16_t offset) {
         while (cap_mask) {
@@ -171,8 +154,8 @@ namespace Engine {
       // en passant
       if (ep_square != Square::SQ_NONE) {
         uint64_t ep_bit = 1ULL << static_cast<uint16_t>(ep_square); // convert square to bitboard representation
-        uint64_t ep_left = (pawns & ~FILE_A) >> 9 & ep_bit;
-        uint64_t ep_right = (pawns & ~FILE_H) >> 7 & ep_bit;
+        uint64_t ep_left = (pawns & ~Grid::FILE_A) >> 9 & ep_bit;
+        uint64_t ep_right = (pawns & ~Grid::FILE_H) >> 7 & ep_bit;
         if (ep_left) {
           moves.push_back(Move(lsb(ep_left) + 9, static_cast<uint16_t>(ep_square), EN_PASSANT));
         }
@@ -189,16 +172,16 @@ namespace Engine {
       uint64_t attacks = 0ULL;
 
       // shifts moving up the bitboard
-      attacks |= (bitboard << 17) & ~FILE_A;
-      attacks |= (bitboard << 15) & ~FILE_H;
-      attacks |= (bitboard << 10) & ~FILE_AB;
-      attacks |= (bitboard << 6) & ~FILE_GH;
+      attacks |= (bitboard << 17) & ~Grid::FILE_A;
+      attacks |= (bitboard << 15) & ~Grid::FILE_H;
+      attacks |= (bitboard << 10) & ~Grid::FILE_AB;
+      attacks |= (bitboard << 6) & ~Grid::FILE_GH;
 
       // shifts moving down the bitboard
-      attacks |= (bitboard << 17) & ~FILE_H;
-      attacks |= (bitboard << 15) & ~FILE_A;
-      attacks |= (bitboard << 10) & ~FILE_GH;
-      attacks |= (bitboard << 6) & ~FILE_AB;
+      attacks |= (bitboard << 17) & ~Grid::FILE_H;
+      attacks |= (bitboard << 15) & ~Grid::FILE_A;
+      attacks |= (bitboard << 10) & ~Grid::FILE_GH;
+      attacks |= (bitboard << 6) & ~Grid::FILE_AB;
 
       KNIGHT_ATTACK_TBL[square] = attacks;
     }
