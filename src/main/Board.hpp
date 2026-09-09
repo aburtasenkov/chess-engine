@@ -27,11 +27,11 @@ namespace Engine {
 
     // getters
     [[nodiscard]] uint64_t get_piece_bitboard(Color color, PieceType piece) const { return pieces[color][piece]; }
-    [[nodiscard]] uint64_t get_color_bitboard(Color color) const { return color_bitboard[color]; }
-    [[nodiscard]] uint64_t get_total_bitboard(void) const { return color_bitboard[Color::BOTH]; }
+    [[nodiscard]] uint64_t get_color_bitboard(Color color) const { return pieces[color][PieceType::ALL]; }
+    [[nodiscard]] uint64_t get_total_bitboard(void) const { return get_color_bitboard(Color::WHITE) | get_color_bitboard(Color::BLACK); }
 
-    [[nodiscard]] uint64_t get_empty_squares(void) const { return ~color_bitboard[Color::BOTH]; }
-    [[nodiscard]] uint64_t get_enemy_pieces(void) const { return color_bitboard[side_to_move == Color::WHITE ? Color::BLACK : Color::WHITE]; }
+    [[nodiscard]] uint64_t get_empty_squares(void) const { return ~get_total_bitboard(); }
+    [[nodiscard]] uint64_t get_enemy_pieces(void) const { return (side_to_move == Color::WHITE ? pieces[Color::BLACK][PieceType::ALL] : pieces[Color::BLACK][PieceType::ALL]); }
 
     [[nodiscard]] CastlingRights get_castling_rights(void) const { return castling_rights; }
     [[nodiscard]] Color get_side_to_move(void) const { return side_to_move; }
@@ -50,9 +50,6 @@ namespace Engine {
       // clear all piece bitboards
       std::memset(pieces, 0, sizeof(pieces));
 
-      // clear all color bitboards
-      std::memset(color_bitboard, 0, sizeof(color_bitboard));
-
       // manual reset
       castling_rights = CastlingRights::NO_CASTLING;
       side_to_move = Color::WHITE;
@@ -64,8 +61,7 @@ namespace Engine {
       uint64_t bit = 1ULL << square;
 
       pieces[color][piece] |= bit;
-      color_bitboard[color] |= bit;
-      color_bitboard[Color::BOTH] |= bit;
+      pieces[color][PieceType::ALL] |= bit;
     }
 
   private:
@@ -74,12 +70,6 @@ namespace Engine {
     alignas(64) uint64_t pieces[2][7] = {
       {StartPos::WhitePawns, StartPos::WhiteKnights, StartPos::WhiteBishops, StartPos::WhiteRooks, StartPos::WhiteQueen, StartPos::WhiteKing, StartPos::WhiteAll},
       {StartPos::BlackPawns, StartPos::BlackKnights, StartPos::BlackBishops, StartPos::BlackRooks, StartPos::BlackQueen, StartPos::BlackKing, StartPos::BlackAll}
-    };
-
-    uint64_t color_bitboard[3] = {
-                                  {StartPos::WhiteAll}, 
-                                  {StartPos::BlackAll}, 
-                                  {StartPos::WhiteAll | StartPos::BlackAll}
     };
 
     CastlingRights castling_rights = CastlingRights::ALL_CASTLING;
