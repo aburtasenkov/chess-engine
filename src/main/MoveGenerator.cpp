@@ -9,6 +9,12 @@ namespace Engine {
   static constexpr uint64_t FILE_A = 0x0101010101010101ULL;
   static constexpr uint64_t FILE_H = 0x8080808080808080ULL;
 
+  // constants for knights wrap around prevention
+  static constexpr uint64_t FILE_B  = 0x0202020202020202ULL;
+  static constexpr uint64_t FILE_G  = 0x4040404040404040ULL;
+  static constexpr uint64_t FILE_AB = FILE_A | FILE_B;
+  static constexpr uint64_t FILE_GH = FILE_G | FILE_H;
+
   // constant for calculating pawn promotions
   static constexpr uint64_t RANK_1 = 0x00000000000000FFULL; // black promotion rank
   static constexpr uint64_t RANK_8 = 0xFF00000000000000ULL; // white promotion rank
@@ -28,21 +34,25 @@ namespace Engine {
     return i;
   }
 
-  MoveList MoveGenerator::generate_legal_moves(const Board& board) {
+  MoveGenerator::MoveGenerator(void) {
+    init_knight_attacks();
+  }
+
+  MoveList MoveGenerator::pseudo_legal_moves(const Board& board) {
     MoveList moves;
 
     // generating pseudo legal moves for now
-    generate_pawn_moves(board, moves);
-    generate_knight_moves(board, moves);
-    generate_bishop_moves(board, moves);
-    generate_rook_moves(board, moves);
-    generate_queen_moves(board, moves);
-    generate_king_moves(board, moves);
+    pseudo_legal_pawn_moves(board, moves);
+    pseudo_legal_knight_moves(board, moves);
+    pseudo_legal_bishop_moves(board, moves);
+    pseudo_legal_rook_moves(board, moves);
+    pseudo_legal_queen_moves(board, moves);
+    pseudo_legal_king_moves(board, moves);
 
     return moves;
   }
   
-  void MoveGenerator::generate_pawn_moves(const Board& board, MoveList& moves) {
+  void MoveGenerator::pseudo_legal_pawn_moves(const Board& board, MoveList& moves) {
     Color side_to_move = board.get_side_to_move();
     uint64_t pawns = board.get_piece_bitboard(side_to_move, PieceType::PAWN);
 
@@ -173,27 +183,48 @@ namespace Engine {
     }
   }
 
-  void MoveGenerator::generate_knight_moves(const Board& board, MoveList& moves) {
+  void MoveGenerator::init_knight_attacks(void) {
+    for (uint8_t square = 0; square < 64; ++square) {
+      uint64_t bitboard = 1ULL << square;
+      uint64_t attacks = 0ULL;
+
+      // shifts moving up the bitboard
+      attacks |= (bitboard << 17) & ~FILE_A;
+      attacks |= (bitboard << 15) & ~FILE_H;
+      attacks |= (bitboard << 10) & ~FILE_AB;
+      attacks |= (bitboard << 6) & ~FILE_GH;
+
+      // shifts moving down the bitboard
+      attacks |= (bitboard << 17) & ~FILE_H;
+      attacks |= (bitboard << 15) & ~FILE_A;
+      attacks |= (bitboard << 10) & ~FILE_GH;
+      attacks |= (bitboard << 6) & ~FILE_AB;
+
+      KNIGHT_ATTACK_TBL[square] = attacks;
+    }
+  }
+
+  void MoveGenerator::pseudo_legal_knight_moves(const Board& board, MoveList& moves) {
     (void)board;
     (void)moves;
   }
 
-  void MoveGenerator::generate_bishop_moves(const Board& board, MoveList& moves) {
+  void MoveGenerator::pseudo_legal_bishop_moves(const Board& board, MoveList& moves) {
     (void)board;
     (void)moves;
   }
 
-  void MoveGenerator::generate_rook_moves(const Board& board, MoveList& moves) {
+  void MoveGenerator::pseudo_legal_rook_moves(const Board& board, MoveList& moves) {
     (void)board;
     (void)moves;
   }
 
-  void MoveGenerator::generate_queen_moves(const Board& board, MoveList& moves) {
+  void MoveGenerator::pseudo_legal_queen_moves(const Board& board, MoveList& moves) {
     (void)board;
     (void)moves;
   }
 
-  void MoveGenerator::generate_king_moves(const Board& board, MoveList& moves) {
+  void MoveGenerator::pseudo_legal_king_moves(const Board& board, MoveList& moves) {
     (void)board;
     (void)moves;
   }
