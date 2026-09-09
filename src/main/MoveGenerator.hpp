@@ -16,8 +16,10 @@ namespace Engine {
    */
   class MoveGenerator {
   public:
+    // default constructor
     MoveGenerator(void);
     
+    // return list of all pseudo legal moves
     MoveList pseudo_legal_moves(const Board& board);
 
   private:
