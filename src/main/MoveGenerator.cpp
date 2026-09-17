@@ -17,8 +17,12 @@ namespace Engine {
     return i;
   }
 
-  MoveGenerator::MoveGenerator(void) {
+  void MoveGenerator::init_tables(void) {
+    if (is_initialized) return;
+
     init_knight_attacks();
+
+    is_initialized = true;
   }
 
   MoveList MoveGenerator::pseudo_legal_moves(const Board& board) {

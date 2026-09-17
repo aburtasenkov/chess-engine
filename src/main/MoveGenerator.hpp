@@ -10,24 +10,26 @@ namespace Engine {
 
   /**
    * @class MoveGenerator
-   * @brief A stateless utility class used for move calculation.
-   * @note All methods are static to avoid the overhead of object instantiation,
-   * treating the generator as a pure functional component of the engine.
+   * @brief A utility class used for move calculation.
+   * @note The class needs to be initialized for knight move generation in order
+   * to cache all possible knight moves.
    */
   class MoveGenerator {
   public:
-    // default constructor
-    MoveGenerator(void);
+
+    // interface for initialization
+    static void init_tables(void);
     
     // return list of all pseudo legal moves
-    MoveList pseudo_legal_moves(const Board& board);
+    static MoveList pseudo_legal_moves(const Board& board);
 
   private:
     /** @name Internal members*/
     ///@{
 
     // lookup table of bitboards for knight attacks
-    uint64_t KNIGHT_ATTACK_TBL[64];
+    static inline uint64_t KNIGHT_ATTACK_TBL[64] = {0};
+    static inline bool is_initialized = false;
     
     ///@}
 
@@ -35,7 +37,7 @@ namespace Engine {
     ///@{
 
     // initialize lookup table for knights moves
-    void init_knight_attacks(void);
+    static void init_knight_attacks(void);
 
     ///@}
 
@@ -43,7 +45,7 @@ namespace Engine {
     ///@{
 
     static void pseudo_legal_pawn_moves(const Board& board, MoveList& moves);
-    void pseudo_legal_knight_moves(const Board& board, MoveList& moves);
+    static void pseudo_legal_knight_moves(const Board& board, MoveList& moves);
     static void pseudo_legal_bishop_moves(const Board& board, MoveList& moves);
     static void pseudo_legal_rook_moves(const Board& board, MoveList& moves);
     static void pseudo_legal_queen_moves(const Board& board, MoveList& moves);
