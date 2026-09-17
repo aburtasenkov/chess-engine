@@ -131,7 +131,7 @@ namespace Engine {
 
     EXPECT_FALSE(move_exists(moves, Square::SQ_E1, Square::SQ_D1)); // stepping into rook's fire
     EXPECT_FALSE(move_exists(moves, Square::SQ_E1, Square::SQ_D2)); // stepping into rook's fire
-    EXPECT_TRUE(move_exists(moves, Square::SQ_E1, SQ_F1));  // safe square
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E1, Square::SQ_F1));  // safe square
   }
 
   TEST_F(MoveGeneratorTest, Stalemate) {
