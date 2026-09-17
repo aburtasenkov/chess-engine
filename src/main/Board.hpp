@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include "Constants.hpp"
+#include "Move.hpp"
 
 #include <stdint.h>
 #include <cassert>
@@ -49,6 +50,7 @@ namespace Engine {
     void clear(void) {
       // clear all piece bitboards
       std::memset(pieces, 0, sizeof(pieces));
+      std::memset(mailbox, PieceType::NONE, sizeof(mailbox));
 
       // manual reset
       castling_rights = CastlingRights::NO_CASTLING;
@@ -62,6 +64,11 @@ namespace Engine {
 
       pieces[color][piece] |= bit;
       pieces[color][PieceType::ALL] |= bit;
+      mailbox[square] = piece;
+    }
+
+    void make_move(const Move& move) {
+      (void)move;
     }
 
   private:
@@ -71,6 +78,8 @@ namespace Engine {
       {StartPos::WhitePawns, StartPos::WhiteKnights, StartPos::WhiteBishops, StartPos::WhiteRooks, StartPos::WhiteQueen, StartPos::WhiteKing, StartPos::WhiteAll},
       {StartPos::BlackPawns, StartPos::BlackKnights, StartPos::BlackBishops, StartPos::BlackRooks, StartPos::BlackQueen, StartPos::BlackKing, StartPos::BlackAll}
     };
+
+    PieceType mailbox[64] = {PieceType::NONE};
 
     CastlingRights castling_rights = CastlingRights::ALL_CASTLING;
     Color side_to_move = Color::WHITE;
