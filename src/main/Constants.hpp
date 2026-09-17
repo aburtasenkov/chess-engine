@@ -125,7 +125,7 @@ namespace Engine {
   enum PieceType
     : uint8_t 
   {
-    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL
+    PAWN = 0, KNIGHT, BISHOP, ROOK, QUEEN, KING, ALL, NONE
   };
 
   /**
