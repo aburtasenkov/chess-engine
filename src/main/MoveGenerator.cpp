@@ -303,8 +303,36 @@ namespace Engine {
   }
 
   void MoveGenerator::pseudo_legal_king_moves(const Board& board, MoveList& moves) {
-    (void)board;
-    (void)moves;
+    Color side_to_move = board.get_side_to_move();
+    uint64_t king = board.get_piece_bitboard(side_to_move, PieceType::KING);
+
+    uint64_t friendly_pieces = board.get_color_bitboard(side_to_move);
+    uint64_t hostile_pieces = board.get_enemy_pieces();
+
+    while (king) {
+      uint16_t from = pop_lsb(king);
+      uint64_t king_bitboard = 1ULL << from;
+      uint64_t attacks = 0ULL;
+
+      attacks |= (king_bitboard << 8);
+      attacks |= (king_bitboard >> 8);
+      attacks |= (king_bitboard << 1) & ~Grid::FILE_A;  // avoid wrap-around bugs
+      attacks |= (king_bitboard >> 1) & ~Grid::FILE_H;
+      attacks |= (king_bitboard << 7) & ~Grid::FILE_H;
+      attacks |= (king_bitboard >> 7) & ~Grid::FILE_A;
+      attacks |= (king_bitboard << 9) & ~Grid::FILE_A;
+      attacks |= (king_bitboard >> 9) & ~Grid::FILE_H;
+
+      attacks &= ~friendly_pieces;
+
+      while (attacks) {
+        uint16_t to = pop_lsb(attacks);
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+      }
+    }
+
+    // TODO: add castling
+
   }
 
 } // namespace Engine
