@@ -47,6 +47,9 @@ namespace Engine {
     void set_halfmove_clock(uint16_t clock) { halfmove_clock = clock; }
     void set_fullmove_counter(uint16_t counter) { fullmove_counter = counter; }
 
+    // properties
+    bool has_castling_right(CastlingRights rights) { return castling_rights & rights; }
+
     void clear(void) {
       // clear all piece bitboards
       std::memset(pieces, 0, sizeof(pieces));
