@@ -257,8 +257,44 @@ namespace Engine {
   }
 
   void MoveGenerator::pseudo_legal_rook_moves(const Board& board, MoveList& moves) {
-    (void)board;
-    (void)moves;
+    Color side_to_move = board.get_side_to_move();
+    uint64_t rooks = board.get_piece_bitboard(side_to_move, PieceType::ROOK);
+
+    uint64_t friendly_pieces = board.get_color_bitboard(side_to_move);
+    uint64_t hostile_pieces = board.get_enemy_pieces();
+    uint64_t occupied = board.get_total_bitboard();
+
+    while (rooks) {
+      uint16_t from = pop_lsb(rooks);
+
+      // north (+8)
+      for (int16_t to = from + 8; to < 64; to += 8) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      // south (-8)
+      for (int16_t to = from - 8; to >= 0; to -= 8) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      // east (+1)
+      for (int16_t to = from + 1; to < 64 && (to % 8 != 0); to += 1) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      // west (-1)
+      for (int16_t to = from - 1; to >= 0 && (to % 8 != 7); to -= 1) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+    }
   }
 
   void MoveGenerator::pseudo_legal_queen_moves(const Board& board, MoveList& moves) {
