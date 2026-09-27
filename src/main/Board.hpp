@@ -48,7 +48,7 @@ namespace Engine {
     void set_fullmove_counter(uint16_t counter) { fullmove_counter = counter; }
 
     // properties
-    bool has_castling_right(CastlingRights rights) { return castling_rights & rights; }
+    bool has_castling_right(CastlingRights rights) const { return castling_rights & rights; }
 
     void clear(void) {
       // clear all piece bitboards
