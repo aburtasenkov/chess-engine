@@ -249,4 +249,139 @@ namespace Engine {
     EXPECT_TRUE(move_exists(moves, Square::SQ_D5, Square::SQ_E3));
   }
 
+  TEST_F(MoveGeneratorTest, BishopCenterMobility) {
+    IO::Fen::load(board, "k7/8/8/8/4B3/8/8/K7 w - - 0 1");
+    auto moves = MoveGenerator::pseudo_legal_moves(board);
+
+    size_t bishop_move_count = 0;
+    for (const auto& move : moves) {
+      if (move.from() == Square::SQ_E4) bishop_move_count++;
+    }
+    EXPECT_EQ(bishop_move_count, 13);
+
+    // check extremes to make sure it reaches the edges correctly
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_A8));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_H7));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_H1));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_B1));
+  }
+
+  TEST_F(MoveGeneratorTest, BishopCapturesAndBlockades) {
+    IO::Fen::load(board, "k7/8/2p3P1/8/4B3/8/2P3p1/K7 w - - 0 1");
+    auto moves = MoveGenerator::pseudo_legal_moves(board);
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F5));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_G6));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_H7));
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D5));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_C6));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_B7));
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D3));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_C2));
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F3));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_G2));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_H1));
+  }
+
+  TEST_F(MoveGeneratorTest, RookCenterMobility) {
+    IO::Fen::load(board, "k7/8/8/8/4R3/8/8/K7 w - - 0 1");
+    auto moves = MoveGenerator::pseudo_legal_moves(board);
+
+    size_t rook_move_count = 0;
+    for (const auto& move : moves) {
+      if (move.from() == Square::SQ_E4) rook_move_count++;
+    }
+    EXPECT_EQ(rook_move_count, 14);
+
+    // check extremes
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_E8));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_E1));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_A4));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_H4));
+  }
+
+  TEST_F(MoveGeneratorTest, RookCapturesAndBlockades) {
+    IO::Fen::load(board, "k7/4p3/8/8/1P2R1p1/8/4P3/K7 w - - 0 1");
+    auto moves = MoveGenerator::pseudo_legal_moves(board);
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_E7));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_E8));
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_E3));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_E2));
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F4));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_G4));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_H4));
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D4));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_C4));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_B4));
+  }
+
+  TEST_F(MoveGeneratorTest, QueenCenterMobility) {
+    IO::Fen::load(board, "k7/8/8/8/4Q3/8/8/K7 w - - 0 1");
+    auto moves = MoveGenerator::pseudo_legal_moves(board);
+
+    size_t queen_move_count = 0;
+    for (const auto& move : moves) {
+      if (move.from() == Square::SQ_E4) queen_move_count++;
+    }
+    EXPECT_EQ(queen_move_count, 27);
+  }
+
+  TEST_F(MoveGeneratorTest, KingCenterMobility) {
+    IO::Fen::load(board, "8/8/8/8/4K3/8/8/k7 w - - 0 1");
+    auto moves = MoveGenerator::pseudo_legal_moves(board);
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D5));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_E5));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F5));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D4));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F4));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D3));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_E3));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F3));
+
+    size_t king_moves = 0;
+    for (const auto& move : moves) {
+      if (move.from() == Square::SQ_E4) king_moves++;
+    }
+    EXPECT_EQ(king_moves, 8);
+  }
+
+  TEST_F(MoveGeneratorTest, KingEdgeAndCornerMobility) {
+    IO::Fen::load(board, "K7/8/8/8/8/8/8/k7 w - - 0 1");
+    auto moves = MoveGenerator::pseudo_legal_moves(board);
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_A8, Square::SQ_B8));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_A8, Square::SQ_A7));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_A8, Square::SQ_B7));
+
+    size_t king_moves = 0;
+    for (const auto& move : moves) {
+      if (move.from() == Square::SQ_A8) king_moves++;
+    }
+    EXPECT_EQ(king_moves, 3);
+  }
+
+  TEST_F(MoveGeneratorTest, KingCapturesAndBlockades) {
+    IO::Fen::load(board, "k7/8/8/4P3/3PKp2/5p2/8/8 w - - 0 1");
+    auto moves = MoveGenerator::pseudo_legal_moves(board);
+
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_E5));
+    EXPECT_FALSE(move_exists(moves, Square::SQ_E4, Square::SQ_D4));
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F4));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F3));
+
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D5));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_F5));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_D3));
+    EXPECT_TRUE(move_exists(moves, Square::SQ_E4, Square::SQ_E3));
+  }
+
 } // namespace Engine
