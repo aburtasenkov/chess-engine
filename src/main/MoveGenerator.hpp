@@ -23,7 +23,7 @@ namespace Engine {
     static void init_tables(void);
     
     // return list of all pseudo legal moves
-    static MoveList pseudo_legal_moves(const Board& board);
+    [[nodiscard]] static MoveList pseudo_legal_moves(const Board& board);
 
   private:
     /** @name Internal members*/
