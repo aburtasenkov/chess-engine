@@ -298,8 +298,74 @@ namespace Engine {
   }
 
   void MoveGenerator::pseudo_legal_queen_moves(const Board& board, MoveList& moves) {
-    (void)board;
-    (void)moves;
+    Color side_to_move = board.get_side_to_move();
+    uint64_t queens = board.get_piece_bitboard(side_to_move, PieceType::QUEEN);
+
+    uint64_t friendly_pieces = board.get_color_bitboard(side_to_move);
+    uint64_t hostile_pieces = board.get_enemy_pieces();
+    uint64_t occupied = board.get_total_bitboard();
+
+    while (queens) {
+      uint16_t from = pop_lsb(queens);
+
+      /*----------------------------diagonal moves--------------------------------*/
+      // north east (+9)
+      for (int16_t to = from + 9; to < 64 && (to % 8 != 0); to += 9) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      // north west (+7)
+      for (int16_t to = from + 7; to < 64 && (to % 8 != 7); to += 7) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      // south east (-7)
+      for (int16_t to = from - 7; to >= 0 && (to % 8 != 0); to -= 7) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      // south west (-9)
+      for (int16_t to = from - 9; to >= 0 && (to % 8 != 7); to -= 9) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      /*----------------------------horizontal / vertical  moves--------------------------------*/
+      // north (+8)
+      for (int16_t to = from + 8; to < 64; to += 8) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      // south (-8)
+      for (int16_t to = from - 8; to >= 0; to -= 8) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      // east (+1)
+      for (int16_t to = from + 1; to < 64 && (to % 8 != 0); to += 1) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+
+      // west (-1)
+      for (int16_t to = from - 1; to >= 0 && (to % 8 != 7); to -= 1) {
+        if (friendly_pieces & (1ULL << to)) break;
+        moves.push_back(Move(from, to, hostile_pieces & (1ULL << to) ? CAPTURE : QUIET));
+        if (occupied & (1ULL << to)) break;
+      }
+    }
   }
 
   void MoveGenerator::pseudo_legal_king_moves(const Board& board, MoveList& moves) {
@@ -331,7 +397,47 @@ namespace Engine {
       }
     }
 
-    // TODO: add castling
+    uint64_t occupied = board.get_total_bitboard();
+    Color enemy_color = (side_to_move == Color::WHITE) ? Color::BLACK : Color::WHITE;
+    (void)enemy_color;
+
+    if (side_to_move == Color::WHITE) {
+      // white short castle
+      if (board.has_castling_right(CastlingRights::WHITE_OO)) {
+        uint64_t f1_g1 = (1ULL << static_cast<uint8_t>(Square::SQ_F1)) | 
+                         (1ULL << static_cast<uint8_t>(Square::SQ_G1));
+
+        // ensure squares between king and rook are empty
+        if ((occupied & f1_g1) == 0ULL) {
+          moves.push_back(Move(Square::SQ_E1, Square::SQ_G1, MoveFlag::KING_CASTLE));
+        }
+      } else if (board.has_castling_right(CastlingRights::WHITE_OOO)) { // white long castle
+        uint64_t b1_c1_d1 = (1ULL << static_cast<uint8_t>(Square::SQ_B1)) | 
+                            (1ULL << static_cast<uint8_t>(Square::SQ_C1)) | 
+                            (1ULL << static_cast<uint8_t>(Square::SQ_D1));
+
+        if ((occupied & b1_c1_d1) == 0ULL) {
+          moves.push_back(Move(Square::SQ_E1, Square::SQ_C1, MoveFlag::QUEEN_CASTLE));
+        }
+      }
+    } else {
+      if (board.has_castling_right(CastlingRights::BLACK_OO)) {
+        uint64_t f8_g8 = (1ULL << static_cast<uint8_t>(Square::SQ_F8)) | 
+                         (1ULL << static_cast<uint8_t>(Square::SQ_G8));
+
+        if ((occupied & f8_g8) == 0ULL) {
+          moves.push_back(Move(Square::SQ_E8, Square::SQ_G8, MoveFlag::KING_CASTLE));
+        }
+      } else if (board.has_castling_right(CastlingRights::BLACK_OOO)) {
+        uint64_t b8_c8_d8 = (1ULL << static_cast<uint8_t>(Square::SQ_B8)) | 
+                            (1ULL << static_cast<uint8_t>(Square::SQ_C8)) |
+                            (1ULL << static_cast<uint8_t>(Square::SQ_D8));
+
+        if ((occupied & b8_c8_d8) == 0ULL) {
+          moves.push_back(Move(Square::SQ_E8, Square::SQ_C8, MoveFlag::QUEEN_CASTLE));
+        }
+      }
+    }
 
   }
 
