@@ -17,6 +17,8 @@ namespace Engine {
   class MoveGenerator {
   public:
 
+    MoveGenerator(void) = delete;
+
     // interface for initialization
     static void init_tables(void);
     
