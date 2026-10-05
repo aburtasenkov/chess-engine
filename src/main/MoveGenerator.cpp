@@ -26,6 +26,10 @@ namespace Engine {
   }
 
   MoveList MoveGenerator::pseudo_legal_moves(const Board& board) {
+    if (!is_initialized) {
+      init_tables();
+    }
+
     MoveList moves;
 
     // generating pseudo legal moves for now
