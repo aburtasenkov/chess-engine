@@ -402,8 +402,7 @@ namespace Engine {
     (void)enemy_color;
 
     if (side_to_move == Color::WHITE) {
-      // white short castle
-      if (board.has_castling_right(CastlingRights::WHITE_OO)) {
+      if (board.has_castling_right(CastlingRights::WHITE_OO)) { // white short castle
         uint64_t f1_g1 = (1ULL << static_cast<uint8_t>(Square::SQ_F1)) | 
                          (1ULL << static_cast<uint8_t>(Square::SQ_G1));
 
@@ -411,7 +410,9 @@ namespace Engine {
         if ((occupied & f1_g1) == 0ULL) {
           moves.push_back(Move(Square::SQ_E1, Square::SQ_G1, MoveFlag::KING_CASTLE));
         }
-      } else if (board.has_castling_right(CastlingRights::WHITE_OOO)) { // white long castle
+      }
+
+      if (board.has_castling_right(CastlingRights::WHITE_OOO)) { // white long castle
         uint64_t b1_c1_d1 = (1ULL << static_cast<uint8_t>(Square::SQ_B1)) | 
                             (1ULL << static_cast<uint8_t>(Square::SQ_C1)) | 
                             (1ULL << static_cast<uint8_t>(Square::SQ_D1));
@@ -421,14 +422,16 @@ namespace Engine {
         }
       }
     } else {
-      if (board.has_castling_right(CastlingRights::BLACK_OO)) {
+      if (board.has_castling_right(CastlingRights::BLACK_OO)) { // black short castle
         uint64_t f8_g8 = (1ULL << static_cast<uint8_t>(Square::SQ_F8)) | 
                          (1ULL << static_cast<uint8_t>(Square::SQ_G8));
 
         if ((occupied & f8_g8) == 0ULL) {
           moves.push_back(Move(Square::SQ_E8, Square::SQ_G8, MoveFlag::KING_CASTLE));
         }
-      } else if (board.has_castling_right(CastlingRights::BLACK_OOO)) {
+      }
+
+      if (board.has_castling_right(CastlingRights::BLACK_OOO)) {  // black long castle
         uint64_t b8_c8_d8 = (1ULL << static_cast<uint8_t>(Square::SQ_B8)) | 
                             (1ULL << static_cast<uint8_t>(Square::SQ_C8)) |
                             (1ULL << static_cast<uint8_t>(Square::SQ_D8));
